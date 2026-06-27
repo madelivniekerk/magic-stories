@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Magic Stories — create your storybook</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700;900&family=Fredoka+One&family=Spectral:ital,wght@0,400;0,500;1,400;1,500&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="magic-app.css?v=11" />
+</head>
+<body>
+
+  <!-- app bar -->
+  <header class="appbar">
+    <button class="brand" id="brand-home" type="button">
+      <span class="spark">✦</span><span class="name">Magic Stories</span>
+    </button>
+    <div class="appbar-right">
+      <button class="btn btn-ghost btn-sm" id="lib-btn" type="button">📚 Story Library</button>
+    </div>
+  </header>
+
+  <!-- 1) BUILDER -->
+  <section class="screen" id="screen-builder" data-screen-label="builder">
+    <div class="wrap">
+      <div class="builder-head">
+        <div class="step-count" id="step-count">Step 1 of 8</div>
+        <h1>Let's build a story</h1>
+        <div class="trail" id="trail"></div>
+      </div>
+      <div class="step-panel" id="step-panel"></div>
+      <div class="builder-nav" id="builder-nav"></div>
+    </div>
+  </section>
+
+  <!-- 2) LOADING -->
+  <section class="screen" id="screen-loading" data-screen-label="loading">
+    <div class="wrap">
+      <div class="load-book">📖</div>
+      <div class="load-title">Weaving your story…</div>
+      <div class="load-msg" id="load-msg">The story fairies are dipping their quills…</div>
+      <div class="load-bar"><div class="load-fill" id="load-fill"></div></div>
+    </div>
+  </section>
+
+  <!-- 3) COVER -->
+  <section class="screen" id="screen-cover" data-screen-label="cover">
+    <div class="wrap">
+      <div class="book-stage">
+        <div class="spread shimmer" id="cover-spread"></div>
+        <div class="book-controls">
+          <button class="btn btn-gold btn-lg" id="open-book" type="button">✦ Open the Book ✦</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4) STORY PAGES -->
+  <section class="screen" id="screen-pages" data-screen-label="story-pages">
+    <div class="wrap">
+      <div class="book-stage">
+        <div class="spread" id="story-spread"></div>
+        <div class="book-controls">
+          <button class="round-btn" id="prev-page" type="button" aria-label="Previous page">←</button>
+          <div class="dots" id="page-dots"></div>
+          <button class="round-btn" id="next-page" type="button" aria-label="Next page">→</button>
+        </div>
+        <div class="page-tools">
+          <button class="btn btn-ghost btn-sm" id="edit-toggle" type="button">✏️ Edit text</button>
+          <button class="btn btn-ghost btn-sm" id="repaint-toggle" type="button">🎨 Repaint illustration</button>
+        </div>
+        <div class="tool-pop" id="edit-pop">
+          <h4>Edit this page's words</h4>
+          <textarea class="txt" id="edit-text"></textarea>
+          <div style="margin-top:12px;text-align:right;"><button class="btn btn-primary btn-sm" id="edit-save" type="button">Save changes</button></div>
+        </div>
+        <div class="tool-pop" id="repaint-pop">
+          <h4>Repaint this illustration</h4>
+          <input class="txt" id="repaint-text" type="text" placeholder="Describe a change… e.g. make it sunset, add a friendly owl" />
+          <div style="margin-top:12px;text-align:right;"><button class="btn btn-primary btn-sm" id="repaint-go" type="button">✦ Repaint this page</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5) THE END -->
+  <section class="screen" id="screen-end" data-screen-label="the-end">
+    <div class="wrap">
+      <div class="the-end">✦ The End ✦</div>
+      <p class="end-sub">What a wonderful adventure. Keep it forever, share it tonight, or begin a brand-new tale.</p>
+      <div class="end-actions">
+        <button class="btn btn-gold btn-lg" id="end-pdf" type="button">⬇ Download PDF</button>
+        <button class="btn btn-primary" id="end-save" type="button">📚 Save to Library</button>
+        <button class="btn btn-ghost" id="end-new" type="button">✦ Write a New Story</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6) LIBRARY -->
+  <section class="screen" id="screen-library" data-screen-label="library">
+    <div class="wrap">
+      <div class="lib-head">
+        <div class="eyebrow">your shelf</div>
+        <h1>📚 Story Library</h1>
+      </div>
+      <div class="lib-grid" id="lib-grid"></div>
+      <div style="text-align:center;margin-top:34px;">
+        <button class="btn btn-primary btn-lg" id="lib-new" type="button">✦ Write a New Story</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="magic-app.js?v=11"></script>
+</body>
+</html>

@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>My Magic Story — imaginative storybooks for every kind of mind</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@700;900&family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    /* midnight magic palette */
+    --bg1:#1a2b49; --bg2:#0c1426; --bg3:#05080f;
+    --panel:#101c33; --panel-2:#16243f; --panel-line:rgba(230,200,138,.16);
+    --page:#fbf6ea; --page-2:#f2e7cd; --page-edge:#e2cfa6;
+    --ink:#2c2417; --ink-soft:#6c6047;
+    --navy:#21314f; --navy-2:#151f33;
+    --cream-text:#ece3cd; --cream-soft:#aebbcf;
+    --gold:#d8b257; --gold-deep:#b1862f; --gold-lt:#f0d894;
+    --purple:#7b2fa8; --purple-lt:#b06fd8;
+    --star:#f3ecd6;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    font-family:'Nunito',system-ui,sans-serif;
+    color:var(--cream-text);
+    background:var(--bg2);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{ color:inherit; }
+  ::selection{ background:rgba(216,178,87,.3); }
+
+  /* ---------- star field ---------- */
+  .sky{ position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(150% 90% at 50% -10%, #243a60 0%, #14223c 34%, var(--bg2) 64%, var(--bg3) 100%);
+  }
+  .sky .stars, .sky .stars2{ position:absolute; inset:-2px; background-repeat:repeat; }
+  .sky .stars{
+    background-image:
+      radial-gradient(1.4px 1.4px at 20% 30%, rgba(243,236,214,.9), transparent),
+      radial-gradient(1.2px 1.2px at 70% 18%, rgba(243,236,214,.7), transparent),
+      radial-gradient(1.6px 1.6px at 42% 62%, rgba(243,236,214,.8), transparent),
+      radial-gradient(1.1px 1.1px at 88% 48%, rgba(243,236,214,.6), transparent),
+      radial-gradient(1.3px 1.3px at 12% 78%, rgba(243,236,214,.7), transparent),
+      radial-gradient(1.5px 1.5px at 60% 85%, rgba(243,236,214,.75), transparent),
+      radial-gradient(1.2px 1.2px at 33% 12%, rgba(243,236,214,.6), transparent),
+      radial-gradient(1.4px 1.4px at 92% 80%, rgba(243,236,214,.7), transparent);
+    background-size:760px 760px;
+  }
+  .sky .stars2{
+    background-image:
+      radial-gradient(1px 1px at 15% 50%, rgba(216,178,87,.7), transparent),
+      radial-gradient(1.2px 1.2px at 55% 35%, rgba(216,178,87,.55), transparent),
+      radial-gradient(1px 1px at 80% 65%, rgba(216,178,87,.6), transparent),
+      radial-gradient(1px 1px at 38% 88%, rgba(216,178,87,.5), transparent);
+    background-size:520px 520px;
+    animation:twinkle 6s ease-in-out infinite;
+  }
+  @keyframes twinkle{ 0%,100%{ opacity:.5; } 50%{ opacity:1; } }
+  .sky .moonglow{ position:absolute; top:-12%; left:50%; transform:translateX(-50%);
+    width:1200px; height:760px;
+    background:radial-gradient(ellipse at 50% 40%, rgba(90,130,210,.28), rgba(90,130,210,0) 62%);
+  }
+
+  .wrap{ position:relative; z-index:1; }
+  .container{ width:min(1180px, 92vw); margin:0 auto; }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    font-family:'Cinzel',serif; font-weight:600; font-size:14.5px; letter-spacing:.02em;
+    display:inline-flex; align-items:center; gap:9px; cursor:pointer; text-decoration:none;
+    padding:12px 20px; border-radius:13px; border:1.5px solid transparent; white-space:nowrap;
+    transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  }
+  .btn-gold{
+    background:linear-gradient(180deg,#e6c878,#c89a3c);
+    color:#241a06; border-color:rgba(120,86,18,.5);
+    box-shadow:0 10px 24px -8px rgba(216,178,87,.5), inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  .btn-gold .spark{ color:#7a5a12; }
+  .btn-gold:hover{ transform:translateY(-1px); box-shadow:0 14px 30px -8px rgba(216,178,87,.6), inset 0 1px 0 rgba(255,255,255,.5); }
+  .btn-ghost{
+    background:rgba(236,227,205,.04); color:var(--cream-text);
+    border-color:rgba(230,200,138,.32);
+  }
+  .btn-ghost:hover{ border-color:rgba(230,200,138,.6); background:rgba(236,227,205,.08); }
+  .btn-lg{ font-size:16px; padding:15px 27px; border-radius:15px; }
+  .spark{ color:var(--gold-lt); }
+
+  .ghost-link{ font-family:'Cinzel',serif; font-weight:600; font-size:15px; color:var(--gold-lt); text-decoration:none; display:inline-flex; align-items:center; gap:7px; transition:color .15s; }
+  .ghost-link:hover{ color:#fff0cf; }
+
+  /* ---------- nav ---------- */
+  .nav{ display:flex; align-items:center; justify-content:space-between; padding:24px 0; }
+  .logo{ display:flex; align-items:center; gap:11px; }
+  .logo .spark{ color:var(--gold-lt); font-size:26px; }
+  .logo .name{ font-family:'Cinzel Decorative',serif; font-weight:700; font-size:30px; color:var(--cream-text); }
+  .nav-right{ display:flex; align-items:center; gap:clamp(16px,3vw,34px); }
+  .nav-links{ display:flex; align-items:center; gap:clamp(16px,2.4vw,30px); }
+  .nav-links a{ font-family:'Cinzel',serif; font-weight:500; font-size:14.5px; color:var(--cream-soft); text-decoration:none; transition:color .15s; }
+  .nav-links a:hover{ color:var(--cream-text); }
+
+  /* ---------- hero ---------- */
+  .hero{ display:flex; flex-direction:column; align-items:center; padding:14px 0 70px; text-align:center; }
+  .hero-image{ display:block; width:min(1080px, 96vw); height:auto; margin:6px auto 0;
+    border-radius:16px; box-shadow:0 44px 74px -32px rgba(0,0,0,.72), 0 12px 22px -14px rgba(0,0,0,.5); }
+  .book{ position:relative; width:min(1180px, 97vw); margin:6px auto 0;
+    filter:drop-shadow(0 44px 52px rgba(0,0,0,.55)) drop-shadow(0 14px 20px rgba(0,0,0,.32)); }
+  .book canvas, .book .book-img-raw{ display:block; width:100%; height:auto; }
+  .hero-line{ max-width:46ch; margin:24px auto 2px; text-align:center;
+    font-family:'Spectral',serif; font-style:italic; font-size:clamp(16px,1.7vw,21px);
+    line-height:1.5; color:#cdbfa3; }
+  .hero-line b{ font-style:normal; font-weight:600; color:var(--gold-lt); }
+  .page-text{ position:absolute; left:55.3%; right:5.4%; top:15%; bottom:18.5%;
+    display:flex; flex-direction:column; justify-content:center; text-align:left; z-index:2; }
+  .eyebrow{ font-family:'Cinzel',serif; font-style:italic; font-weight:500; font-size:1.85cqw; letter-spacing:.04em; color:var(--gold-deep); margin:0 0 1.2cqw; }
+  .headline{ font-family:'Spectral',serif; font-weight:500; font-size:3.3cqw; line-height:1.16; color:var(--ink); margin:0 0 1.7cqw; }
+  .headline .drop{ font-family:'Cinzel Decorative',serif; font-weight:900; font-size:1.65em; line-height:.8; color:var(--purple); float:left; margin:.02em .08em -.06em 0; }
+  .headline em{ font-style:italic; color:var(--purple); }
+  .subhead{ font-family:'Spectral',serif; font-weight:400; font-size:1.56cqw; line-height:1.58; color:var(--ink-soft); margin:0; }
+
+  .actions{ display:flex; flex-direction:column; align-items:center; gap:16px; margin-top:clamp(34px,5vw,54px); }
+  .cta-row{ display:flex; align-items:center; gap:20px; flex-wrap:wrap; justify-content:center; }
+  .trust{ display:flex; align-items:center; gap:clamp(18px,3vw,34px); flex-wrap:wrap; justify-content:center; margin-top:8px; }
+  .trust .item{ display:flex; align-items:center; gap:9px; font-weight:700; font-size:14px; color:var(--cream-soft); }
+  .trust .tick{ width:21px; height:21px; border-radius:50%; background:rgba(216,178,87,.14); border:1.5px solid rgba(216,178,87,.5); color:var(--gold-lt); display:grid; place-items:center; font-size:11px; }
+  .trust .sep{ width:5px; height:5px; border-radius:50%; background:var(--gold); opacity:.6; }
+
+  /* ---------- section scaffold ---------- */
+  section{ padding:clamp(54px,8vw,104px) 0; position:relative; }
+  .sec-head{ text-align:center; max-width:680px; margin:0 auto clamp(38px,5vw,60px); }
+  .sec-eyebrow{ font-family:'Cinzel',serif; font-style:italic; font-weight:500; font-size:clamp(15px,1.6vw,18px); letter-spacing:.05em; color:var(--gold-lt); margin:0 0 14px; }
+  .sec-title{ font-family:'Cinzel Decorative',serif; font-weight:700; font-size:clamp(28px,3.6vw,46px); line-height:1.14; color:var(--cream-text); margin:0; }
+  .sec-title em{ font-style:normal; color:var(--gold-lt); }
+  .sec-sub{ font-family:'Spectral',serif; font-size:clamp(15px,1.6vw,18px); line-height:1.6; color:var(--cream-soft); margin:16px auto 0; max-width:52ch; }
+
+  .rule{ display:flex; align-items:center; justify-content:center; gap:14px; margin:18px auto 0; color:var(--gold); opacity:.7; }
+  .rule .ln{ width:54px; height:1.5px; background:linear-gradient(90deg, transparent, var(--gold)); }
+  .rule .ln.r{ background:linear-gradient(90deg, var(--gold), transparent); }
+  .rule .gem{ font-size:13px; }
+
+  /* ---------- how it works ---------- */
+  .steps{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(16px,2vw,24px); }
+  .step{ position:relative; padding:30px 24px 28px; border-radius:18px;
+    background:linear-gradient(180deg, rgba(22,36,63,.7), rgba(16,28,51,.7));
+    border:1.5px solid var(--panel-line);
+    box-shadow:0 20px 40px -26px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.04); }
+  .step .num{ font-family:'Cinzel Decorative',serif; font-weight:900; font-size:30px;
+    width:58px; height:58px; border-radius:50%; display:grid; place-items:center; margin-bottom:20px;
+    color:var(--gold-lt); background:radial-gradient(circle at 50% 40%, rgba(216,178,87,.18), rgba(216,178,87,.04));
+    border:1.5px solid rgba(216,178,87,.4); }
+  .step h3{ font-family:'Cinzel',serif; font-weight:600; font-size:18px; color:var(--cream-text); margin:0 0 10px; }
+  .step p{ font-family:'Spectral',serif; font-size:15px; line-height:1.55; color:var(--cream-soft); margin:0; }
+  .step .glyph{ position:absolute; top:24px; right:24px; font-size:18px; color:var(--gold); opacity:.5; }
+
+  /* ---------- pricing ---------- */
+  .billing{ display:flex; align-items:center; justify-content:center; gap:14px; margin-top:26px; }
+  .toggle{ display:inline-flex; padding:5px; gap:4px; border-radius:14px; background:rgba(8,14,26,.6); border:1.5px solid var(--panel-line); }
+  .toggle button{ font-family:'Cinzel',serif; font-weight:600; font-size:14px; color:var(--cream-soft); background:transparent; border:none; padding:9px 18px; border-radius:10px; cursor:pointer; transition:.15s; }
+  .toggle button:hover{ color:var(--cream-text); }
+  .toggle button.on{ background:linear-gradient(180deg,#e6c878,#c89a3c); color:#241a06; box-shadow:0 6px 14px -6px rgba(216,178,87,.5); }
+  .save-note{ font-family:'Cinzel',serif; font-style:italic; font-size:14px; color:var(--gold-lt); }
+
+  .pricing{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,2vw,22px); align-items:start; max-width:1020px; margin:0 auto; }
+  .pcard{ position:relative; padding:32px 28px; border-radius:20px; background:linear-gradient(180deg,var(--page),var(--page-2));
+    border:1.5px solid var(--page-edge); color:var(--ink);
+    box-shadow:0 26px 50px -28px rgba(0,0,0,.7); }
+  .pcard.feat{ transform:translateY(-16px); border:2px solid var(--gold); padding-top:42px;
+    box-shadow:0 34px 64px -26px rgba(0,0,0,.8), 0 0 0 6px rgba(216,178,87,.1); }
+  .pbadge{ position:absolute; top:-15px; left:50%; transform:translateX(-50%); font-family:'Cinzel',serif; font-weight:600; font-size:12px; letter-spacing:.06em;
+    background:linear-gradient(180deg,#e6c878,#c89a3c); color:#241a06; padding:7px 16px; border-radius:999px; white-space:nowrap; box-shadow:0 8px 18px -6px rgba(216,178,87,.6); }
+  .plan{ font-family:'Cinzel Decorative',serif; font-weight:700; font-size:24px; color:var(--ink); display:flex; align-items:center; gap:8px; }
+  .plan .star{ color:var(--gold-deep); font-size:18px; }
+  .ptag{ font-family:'Spectral',serif; font-size:14px; color:var(--ink-soft); margin:8px 0 18px; min-height:40px; line-height:1.4; }
+  .price{ display:flex; align-items:baseline; gap:4px; }
+  .amt{ font-family:'Cinzel Decorative',serif; font-weight:900; font-size:46px; line-height:1; color:var(--purple); }
+  .per{ font-family:'Spectral',serif; font-size:13px; color:var(--ink-soft); margin:8px 0 22px; }
+  .pcta{ display:flex; justify-content:center; text-align:center; margin-bottom:22px; }
+  .pcta .btn{ width:100%; justify-content:center; }
+  .pcard .btn-dark{ background:linear-gradient(180deg,#2c2519,#201b12); color:#f4e9cf; border-color:rgba(0,0,0,.25); box-shadow:0 8px 18px -8px rgba(40,30,12,.5); }
+  .pcard .btn-dark .spark{ color:var(--gold-lt); }
+  .pcard .btn-outline{ background:transparent; color:var(--ink); border-color:rgba(44,36,23,.3); }
+  .pcard .btn-outline:hover{ border-color:rgba(44,36,23,.6); }
+  .pfeat{ list-style:none; margin:0; padding:18px 0 0; border-top:1.5px dashed rgba(44,36,23,.18); display:flex; flex-direction:column; gap:12px; }
+  .pfeat li{ display:flex; align-items:center; gap:11px; font-family:'Spectral',serif; font-size:14.5px; color:var(--ink); }
+  .pfeat .ck{ flex:0 0 19px; width:19px; height:19px; border-radius:50%; display:grid; place-items:center; font-size:11px; font-weight:800; }
+  .pfeat .ck.y{ color:var(--purple); background:rgba(123,47,168,.12); border:1.5px solid rgba(123,47,168,.4); }
+  .pfeat .ck.n{ color:#b6ac95; border:1.5px solid #d8cbac; }
+  .pfeat li.off{ color:#a99e85; }
+  .price-foot{ text-align:center; font-family:'Spectral',serif; font-size:14px; color:var(--cream-soft); margin:34px auto 0; }
+  .price-foot a{ color:var(--gold-lt); text-decoration:none; }
+
+  /* ---------- closing CTA ---------- */
+  .closing{ padding-bottom:clamp(60px,9vw,120px); }
+  .cta-band{ position:relative; text-align:center; padding:clamp(44px,6vw,72px) clamp(24px,5vw,64px); border-radius:26px; overflow:hidden;
+    background:linear-gradient(160deg, #243a60 0%, #16243f 48%, #0e1730 100%);
+    border:1.5px solid rgba(216,178,87,.32);
+    box-shadow:0 40px 80px -36px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.05); }
+  .cta-band .twirl{ position:absolute; inset:0; pointer-events:none; opacity:.5;
+    background:
+      radial-gradient(1.4px 1.4px at 16% 26%, rgba(243,236,214,.9), transparent),
+      radial-gradient(1.2px 1.2px at 82% 34%, rgba(216,178,87,.8), transparent),
+      radial-gradient(1.3px 1.3px at 40% 72%, rgba(243,236,214,.7), transparent),
+      radial-gradient(1.2px 1.2px at 68% 80%, rgba(216,178,87,.7), transparent),
+      radial-gradient(1.1px 1.1px at 24% 60%, rgba(243,236,214,.6), transparent); }
+  .cta-band .sec-eyebrow{ position:relative; }
+  .cta-band .sparkline{ font-size:24px; color:var(--gold-lt); letter-spacing:10px; margin-bottom:8px; }
+  .cta-band h2{ position:relative; font-family:'Cinzel Decorative',serif; font-weight:700; font-size:clamp(28px,4vw,50px); line-height:1.12; color:var(--cream-text); margin:0 0 16px; }
+  .cta-band h2 em{ font-style:normal; color:var(--gold-lt); }
+  .cta-band p{ position:relative; font-family:'Spectral',serif; font-size:clamp(15px,1.6vw,18px); color:var(--cream-soft); margin:0 auto 28px; max-width:48ch; line-height:1.6; }
+  .cta-band .cta-row{ position:relative; }
+
+  /* ---------- footer ---------- */
+  footer{ padding:38px 0 46px; border-top:1.5px solid rgba(230,200,138,.14); }
+  .foot-in{ display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+  .foot-links{ display:flex; gap:24px; }
+  .foot-links a{ font-family:'Cinzel',serif; font-size:14px; color:var(--cream-soft); text-decoration:none; transition:color .15s; }
+  .foot-links a:hover{ color:var(--cream-text); }
+  .foot-note{ font-family:'Spectral',serif; font-size:13px; color:#7b8aa3; }
+
+  /* ---------- scroll reveal ---------- */
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{ opacity:0; transform:translateY(22px); transition:opacity .7s ease, transform .7s ease; }
+    .reveal.in{ opacity:1; transform:none; }
+    .reveal.d1{ transition-delay:.08s; } .reveal.d2{ transition-delay:.16s; }
+    .reveal.d3{ transition-delay:.24s; } .reveal.d4{ transition-delay:.32s; }
+  }
+
+  /* ---------- story studio (the five questions) ---------- */
+  .studio .builder{ display:grid; grid-template-columns:repeat(auto-fit, minmax(290px,1fr)); gap:clamp(14px,1.8vw,20px); }
+  .qcard{ position:relative; padding:22px 22px 24px; border-radius:20px;
+    background:linear-gradient(180deg, rgba(54,28,92,.55), rgba(26,16,46,.62));
+    border:1.5px solid rgba(176,111,216,.32);
+    box-shadow:0 22px 48px -28px rgba(96,30,150,.7), inset 0 1px 0 rgba(255,255,255,.05); }
+  .qcard .qbadge{ display:inline-flex; align-items:center; gap:9px; font-family:'Cinzel',serif; font-weight:600; letter-spacing:.12em; font-size:13px; text-transform:uppercase; color:var(--gold-lt); }
+  .qcard .qbadge i{ width:26px; height:26px; border-radius:50%; display:grid; place-items:center; font-style:normal; font-size:13px; font-family:'Cinzel Decorative',serif; color:var(--gold-lt); background:rgba(216,178,87,.14); border:1.5px solid rgba(216,178,87,.42); }
+  .qcard .qprompt{ font-family:'Spectral',serif; font-style:italic; font-size:16.5px; line-height:1.4; color:var(--cream-text); margin:13px 0 16px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:9px; }
+  .chip{ display:inline-flex; align-items:center; gap:7px; cursor:pointer; user-select:none;
+    font-family:'Nunito',sans-serif; font-weight:700; font-size:13.5px; color:var(--cream-text);
+    padding:9px 13px; border-radius:12px; background:rgba(16,12,30,.66);
+    border:1.5px solid rgba(176,111,216,.28); transition:transform .12s, border-color .15s, background .15s, box-shadow .15s; }
+  .chip .em{ font-size:16px; line-height:1; }
+  .chip:hover{ border-color:rgba(176,111,216,.75); transform:translateY(-1px); }
+  .chip.sel{ background:linear-gradient(180deg,#8a3fbf,#5e1f8e); border-color:transparent; color:#fff;
+    box-shadow:0 10px 22px -8px rgba(123,47,168,.7), inset 0 1px 0 rgba(255,255,255,.25); }
+  .qcard .own{ font-family:'Spectral',serif; font-style:italic; font-size:13px; color:var(--purple-lt); margin:14px 0 0; display:flex; align-items:center; gap:7px; }
+
+  .ribbon{ margin-top:clamp(22px,3vw,32px); position:relative; padding:28px clamp(24px,4vw,44px) 24px;
+    border-radius:20px; background:linear-gradient(180deg,var(--page),var(--page-2));
+    border:1.5px solid var(--page-edge); box-shadow:0 26px 54px -30px rgba(0,0,0,.7); text-align:center; }
+  .ribbon .ribbon-label{ font-family:'Cinzel',serif; font-weight:600; letter-spacing:.06em; font-size:13px; text-transform:uppercase; color:var(--gold-deep); }
+  .ribbon .ribbon-text{ font-family:'Spectral',serif; font-size:clamp(19px,2.3vw,28px); line-height:1.5; color:var(--ink); margin:14px auto 12px; max-width:48ch; text-wrap:balance; }
+  .ribbon .ribbon-text .frag{ color:var(--purple); font-weight:600; background:linear-gradient(180deg, transparent 62%, rgba(176,111,216,.22) 62%); padding:0 2px; }
+  .ribbon .ribbon-hint{ font-family:'Spectral',serif; font-style:italic; font-size:13.5px; color:var(--ink-soft); }
+
+  /* ---------- magic words (literary devices) ---------- */
+  .magic .magic-grid{ display:grid; grid-template-columns:340px 1fr; gap:clamp(20px,3vw,34px); align-items:stretch; }
+  .dev-col{ display:flex; flex-direction:column; gap:10px; }
+  .dev-chip{ display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; width:100%;
+    padding:13px 15px; border-radius:14px; background:rgba(16,12,30,.6); border:1.5px solid rgba(176,111,216,.26);
+    transition:border-color .15s, background .15s, box-shadow .15s; }
+  .dev-chip .em{ font-size:21px; line-height:1.1; flex:0 0 auto; }
+  .dev-chip .dc-body{ display:flex; flex-direction:column; gap:2px; }
+  .dev-chip .dc-name{ font-family:'Cinzel',serif; font-weight:600; font-size:15px; color:var(--cream-text); }
+  .dev-chip .dc-def{ font-family:'Spectral',serif; font-size:12.5px; line-height:1.35; color:var(--cream-soft); }
+  .dev-chip:hover{ border-color:rgba(176,111,216,.6); }
+  .dev-chip.on{ background:linear-gradient(180deg, rgba(138,63,191,.34), rgba(94,31,142,.28)); border-color:rgba(176,111,216,.85); box-shadow:0 10px 26px -12px rgba(123,47,168,.7); }
+  .dev-chip .dc-toggle{ margin-left:auto; align-self:center; flex:0 0 auto; width:22px; height:22px; border-radius:50%; border:1.5px solid rgba(176,111,216,.5); display:grid; place-items:center; font-size:12px; color:transparent; }
+  .dev-chip.on .dc-toggle{ background:linear-gradient(180deg,#8a3fbf,#5e1f8e); border-color:transparent; color:#fff; }
+  .sentence-stage{ position:relative; border-radius:20px; padding:clamp(26px,3vw,40px); display:flex; flex-direction:column; justify-content:center;
+    background:linear-gradient(180deg,var(--page),var(--page-2)); border:1.5px solid var(--page-edge);
+    box-shadow:0 26px 54px -30px rgba(0,0,0,.7); }
+  .sentence-stage .ss-label{ font-family:'Cinzel',serif; font-weight:600; letter-spacing:.06em; font-size:12px; text-transform:uppercase; color:var(--gold-deep); margin-bottom:14px; }
+  .sentence-stage .ss-text{ font-family:'Spectral',serif; font-size:clamp(20px,2.4vw,30px); line-height:1.5; color:var(--ink); margin:0; }
+  .ss-text .w{ transition:color .2s; }
+  .ss-text .w.adj{ color:#9c3fb0; font-weight:600; }
+  .ss-text .w.adv{ color:#c0762a; font-weight:600; }
+  .ss-text .w.sim{ color:#2f7bbf; font-weight:600; font-style:italic; }
+  .ss-text .w.met{ color:#3a7d4a; font-weight:600; }
+  .ss-text .w.per{ color:#b0457f; font-weight:600; }
+  .sentence-stage .ss-tip{ font-family:'Spectral',serif; font-style:italic; font-size:13.5px; color:var(--ink-soft); margin-top:18px; padding-top:14px; border-top:1.5px dashed rgba(44,36,23,.18); }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:880px){
+    .nav-links{ display:none; }
+    .steps{ grid-template-columns:1fr 1fr; }
+    .pricing{ grid-template-columns:1fr; max-width:420px; }
+    .pcard.feat{ transform:none; }
+    .magic .magic-grid{ grid-template-columns:1fr; }
+  }
+  @media (max-width:820px){
+    .book{ aspect-ratio:auto; container-type:normal; filter:drop-shadow(0 22px 30px rgba(0,0,0,.5)); }
+    .book-img{ position:relative; inset:auto; height:auto; }
+    .page-text{ position:static; inset:auto; text-align:center; margin:22px auto 0; max-width:46ch; }
+    .eyebrow{ font-size:16px; color:var(--gold-lt); }
+    .headline{ font-size:clamp(26px,7vw,34px); color:var(--cream-text); }
+    .headline .drop{ color:var(--gold-lt); }
+    .headline em{ color:var(--gold-lt); }
+    .subhead{ font-size:15px; color:var(--cream-soft); }
+  }
+  @media (max-width:520px){
+    .steps{ grid-template-columns:1fr; }
+    .trust .sep{ display:none; }
+  }
+</style>
+</head>
+<body>
+  <div class="sky"><div class="moonglow"></div><div class="stars"></div><div class="stars2"></div></div>
+
+  <div class="wrap">
+
+    <!-- NAV -->
+    <header class="container">
+      <nav class="nav" data-screen-label="nav">
+        <div class="logo"><span class="spark">✦</span><span class="name">My Magic Story</span></div>
+        <div class="nav-right">
+          <div class="nav-links">
+            <a href="#how">How it works</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#library">Story library</a>
+          </div>
+          <a class="btn btn-gold" href="#"><span class="spark">✦</span> Start for free →</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <main>
+    <section class="hero container" data-screen-label="hero" style="padding-top:14px;">
+      <div class="book" id="bookHost">
+        <img class="book-img-raw" src="assets/book-original.png" alt="An open storybook — a young explorer with a backpack walks a jungle path past a giant stone guardian on the left page; the opening lines of the story on the right." />
+      </div>
+      <div class="actions">
+        <p class="hero-line">Personalised adventures that put your child in charge — built to <b>spark imagination</b> and <b>hold wandering attention</b>, for curious kids and focus-finding minds alike.</p>
+        <div class="cta-row">
+          <a class="btn btn-gold btn-lg" href="#"><span class="spark">✦</span> Create your story free →</a>
+          <a class="ghost-link" href="#how">See how it works ↓</a>
+        </div>
+        <div class="trust">
+          <span class="item"><span class="tick">✓</span> First story free, forever</span>
+          <span class="sep"></span>
+          <span class="item"><span class="tick">✓</span> Short, focus-friendly pages</span>
+          <span class="sep"></span>
+          <span class="item"><span class="tick">✓</span> Made for ages 5–12</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- STORY STUDIO: the five little questions -->
+    <section id="studio" class="studio container" data-screen-label="story-studio">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">the story studio</p>
+        <h2 class="sec-title">Every great story begins with a <em>question.</em></h2>
+        <div class="rule"><span class="ln"></span><span class="gem">✦</span><span class="ln r"></span></div>
+        <p class="sec-sub">We guide your child through the very questions every author asks — one playful choice at a time. Tap a few, and watch a story seed grow before their eyes.</p>
+      </div>
+      <div class="builder" id="builder">
+        <div class="qcard reveal d1">
+          <span class="qbadge"><i>1</i> Who</span>
+          <p class="qprompt">Who is our hero today?</p>
+          <div class="chips">
+            <span class="chip sel" data-w="who" data-frag="Luna the brave unicorn"><span class="em">🦄</span>Brave unicorn</span>
+            <span class="chip" data-w="who" data-frag="Pip the curious fox"><span class="em">🦊</span>Curious fox</span>
+            <span class="chip" data-w="who" data-frag="a shy young dragon"><span class="em">🐉</span>Shy dragon</span>
+            <span class="chip" data-w="who" data-frag="a brave explorer just like you"><span class="em">🧒</span>It's me!</span>
+          </div>
+          <p class="own">✶ …or design your very own hero</p>
+        </div>
+        <div class="qcard reveal d2">
+          <span class="qbadge"><i>2</i> Where</span>
+          <p class="qprompt">Where in the world does it happen?</p>
+          <div class="chips">
+            <span class="chip sel" data-w="where" data-frag="in a glowing enchanted forest"><span class="em">🌳</span>Enchanted forest</span>
+            <span class="chip" data-w="where" data-frag="inside a castle high in the clouds"><span class="em">🏰</span>Sky castle</span>
+            <span class="chip" data-w="where" data-frag="deep beneath the waves"><span class="em">🌊</span>Under the sea</span>
+            <span class="chip" data-w="where" data-frag="on a planet far, far away"><span class="em">🪐</span>Faraway planet</span>
+          </div>
+          <p class="own">✶ …or invent a brand-new world</p>
+        </div>
+        <div class="qcard reveal d3">
+          <span class="qbadge"><i>3</i> When</span>
+          <p class="qprompt">When does our tale take place?</p>
+          <div class="chips">
+            <span class="chip sel" data-w="when" data-frag="long, long ago"><span class="em">⏳</span>Long ago</span>
+            <span class="chip" data-w="when" data-frag="on one moonlit night"><span class="em">🌙</span>Moonlit night</span>
+            <span class="chip" data-w="when" data-frag="far in the future"><span class="em">🔮</span>The future</span>
+            <span class="chip" data-w="when" data-frag="on the first day of summer"><span class="em">🌅</span>Summer's day</span>
+          </div>
+        </div>
+        <div class="qcard reveal d1">
+          <span class="qbadge"><i>4</i> What</span>
+          <p class="qprompt">What happens — what's the quest?</p>
+          <div class="chips">
+            <span class="chip sel" data-w="what" data-frag="must find the missing star"><span class="em">⭐</span>Find the star</span>
+            <span class="chip" data-w="what" data-frag="must unlock a secret door"><span class="em">🗝️</span>Secret door</span>
+            <span class="chip" data-w="what" data-frag="must rescue a lost friend"><span class="em">🐣</span>Rescue a friend</span>
+            <span class="chip" data-w="what" data-frag="must solve an ancient riddle"><span class="em">🧩</span>Solve a riddle</span>
+          </div>
+        </div>
+        <div class="qcard reveal d2">
+          <span class="qbadge"><i>5</i> Why</span>
+          <p class="qprompt">And why does it matter?</p>
+          <div class="chips">
+            <span class="chip sel" data-w="why" data-frag="the night sky has gone dark"><span class="em">🌌</span>The sky went dark</span>
+            <span class="chip" data-w="why" data-frag="a dear friend is in trouble"><span class="em">❤️</span>A friend needs help</span>
+            <span class="chip" data-w="why" data-frag="of a promise they once made"><span class="em">🤝</span>A big promise</span>
+            <span class="chip" data-w="why" data-frag="they long to discover who they truly are"><span class="em">✨</span>To find out who</span>
+          </div>
+        </div>
+      </div>
+      <div class="ribbon reveal">
+        <span class="ribbon-label">✦ Our story so far…</span>
+        <p class="ribbon-text" id="ribbonText"></p>
+        <span class="ribbon-hint">Tap any choice above — the tale rewrites itself ✶</span>
+      </div>
+    </section>
+
+    <!-- MAGIC WORDS: literary devices -->
+    <section id="magic" class="magic container" data-screen-label="magic-words">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">the magic words</p>
+        <h2 class="sec-title">Then we sprinkle in a little <em>word magic.</em></h2>
+        <div class="rule"><span class="ln"></span><span class="gem">✦</span><span class="ln r"></span></div>
+        <p class="sec-sub">As confidence grows, gentle prompts reveal a writer's secret tools — describing words, similes, metaphors and more. Tap each spell and watch a plain sentence bloom.</p>
+      </div>
+      <div class="magic-grid">
+        <div class="dev-col reveal d1">
+          <button class="dev-chip" type="button" data-dev="adj"><span class="em">🎨</span><span class="dc-body"><span class="dc-name">Adjectives</span><span class="dc-def">Describing words that paint the picture.</span></span><span class="dc-toggle">✓</span></button>
+          <button class="dev-chip" type="button" data-dev="adv"><span class="em">🏃</span><span class="dc-body"><span class="dc-name">Adverbs</span><span class="dc-def">They tell us <em>how</em> something is done.</span></span><span class="dc-toggle">✓</span></button>
+          <button class="dev-chip" type="button" data-dev="sim"><span class="em">🪞</span><span class="dc-body"><span class="dc-name">Similes</span><span class="dc-def">Compare two things using <em>like</em> or <em>as</em>.</span></span><span class="dc-toggle">✓</span></button>
+          <button class="dev-chip" type="button" data-dev="met"><span class="em">🌌</span><span class="dc-body"><span class="dc-name">Metaphors</span><span class="dc-def">Say one thing simply <em>is</em> another.</span></span><span class="dc-toggle">✓</span></button>
+          <button class="dev-chip" type="button" data-dev="per"><span class="em">🌙</span><span class="dc-body"><span class="dc-name">Personification</span><span class="dc-def">Give feelings to things that aren't alive.</span></span><span class="dc-toggle">✓</span></button>
+        </div>
+        <div class="sentence-stage reveal d2">
+          <span class="ss-label">✦ Watch the sentence grow</span>
+          <p class="ss-text" id="ssText"></p>
+          <p class="ss-tip">Start plain, then tap a spell — each new word lights up so kids see exactly what it adds.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" class="container" data-screen-label="how-it-works">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">how the magic works</p>
+        <h2 class="sec-title">Where big imaginations become <em>illustrated books.</em></h2>
+        <div class="rule"><span class="ln"></span><span class="gem">✦</span><span class="ln r"></span></div>
+        <p class="sec-sub">Four playful steps turn your child's own ideas into an adventure starring them — with short, vivid pages built to hold attention and reward every “what if?”. No sign-in. No fuss. Just imagination.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal d1">
+          <span class="glyph">✦</span>
+          <div class="num">I</div>
+          <h3>Your child leads</h3>
+          <p>They pick the reading level, the hero, the world and the quest from 22 hand-drawn worlds — a real sense of control from page one.</p>
+        </div>
+        <div class="step reveal d2">
+          <span class="glyph">✦</span>
+          <div class="num">II</div>
+          <h3>Spark a “what if?”</h3>
+          <p>Add one imaginative twist — a pet dragon, a secret door, a brave new friend — and watch their idea steer the whole story.</p>
+        </div>
+        <div class="step reveal d3">
+          <span class="glyph">✦</span>
+          <div class="num">III</div>
+          <h3>Short, vivid pages</h3>
+          <p>Six bite-sized pages, each with its own illustration — easy to follow, quick to finish, and never overwhelming.</p>
+        </div>
+        <div class="step reveal d4">
+          <span class="glyph">✦</span>
+          <div class="num">IV</div>
+          <h3>Read it &amp; keep it</h3>
+          <p>Read together, celebrate the hero who's just like them, fine-tune any page, then download the PDF to keep forever.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="container" data-screen-label="pricing">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">simple, gentle pricing</p>
+        <h2 class="sec-title">Buy only the books <em>you'll actually make.</em></h2>
+        <div class="rule"><span class="ln"></span><span class="gem">✦</span><span class="ln r"></span></div>
+        <p class="sec-sub">No subscriptions, no surprises. Your first story is free — then grab a bundle of book credits whenever you're ready. They never expire.</p>
+      </div>
+
+      <div class="pricing">
+        <div class="pcard reveal d1">
+          <div class="plan">Story Starter</div>
+          <p class="ptag">A handful of adventures to share.</p>
+          <div class="price"><span class="amt">A$9.90</span></div>
+          <p class="per">5 books · A$1.98 each</p>
+          <div class="pcta"><a class="btn btn-outline" href="#">Get 5 books →</a></div>
+          <ul class="pfeat">
+            <li><span class="ck y">✓</span> <strong>5</strong> complete magic books</li>
+            <li><span class="ck y">✓</span> All 22 heroes &amp; worlds</li>
+            <li><span class="ck y">✓</span> PDF download to keep</li>
+            <li><span class="ck y">✓</span> Page editing &amp; repaint</li>
+            <li><span class="ck y">✓</span> Credits never expire</li>
+          </ul>
+        </div>
+
+        <div class="pcard feat reveal d2">
+          <span class="pbadge">✦ Best value</span>
+          <div class="plan">Story Bundle <span class="star">★</span></div>
+          <p class="ptag">The family favourite — more tales, less per book.</p>
+          <div class="price"><span class="amt">A$17.90</span></div>
+          <p class="per">10 books · A$1.79 each</p>
+          <div class="pcta"><a class="btn btn-dark" href="#"><span class="spark">✦</span> Get 10 books →</a></div>
+          <ul class="pfeat">
+            <li><span class="ck y">✓</span> <strong>10</strong> complete magic books</li>
+            <li><span class="ck y">✓</span> All 22 heroes &amp; worlds</li>
+            <li><span class="ck y">✓</span> PDF download to keep</li>
+            <li><span class="ck y">✓</span> Page editing &amp; repaint</li>
+            <li><span class="ck y">✓</span> <strong>Save 10%</strong> vs the starter</li>
+          </ul>
+        </div>
+
+        <div class="pcard reveal d3">
+          <div class="plan">Story Library</div>
+          <p class="ptag">A whole shelf of adventures to grow into.</p>
+          <div class="price"><span class="amt">A$29.90</span></div>
+          <p class="per">20 books · A$1.50 each</p>
+          <div class="pcta"><a class="btn btn-outline" href="#">Get 20 books →</a></div>
+          <ul class="pfeat">
+            <li><span class="ck y">✓</span> <strong>20</strong> complete magic books</li>
+            <li><span class="ck y">✓</span> All 22 heroes &amp; worlds</li>
+            <li><span class="ck y">✓</span> PDF download to keep</li>
+            <li><span class="ck y">✓</span> Page editing &amp; repaint</li>
+            <li><span class="ck y">✓</span> Priority illustration</li>
+          </ul>
+        </div>
+      </div>
+      <p class="price-foot reveal">Every book is yours to keep — private, ad-free, downloadable forever. One book = one complete, illustrated story.</p>
+    </section>
+
+    <!-- CLOSING CTA -->
+    <section class="closing container" data-screen-label="closing-cta">
+      <div class="cta-band reveal">
+        <div class="twirl"></div>
+        <div class="sparkline">✦ ✦ ✦</div>
+        <p class="sec-eyebrow">the page is open…</p>
+        <h2>The story is waiting. <em>Your child is the hero.</em></h2>
+        <p>No sign-up. No credit card. One little click and their imagination takes the lead.</p>
+        <div class="cta-row">
+          <a class="btn btn-gold btn-lg" href="#"><span class="spark">✦</span> Create your story free →</a>
+          <a class="btn btn-ghost btn-lg" href="#how">See how it works</a>
+        </div>
+      </div>
+    </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="container" data-screen-label="footer">
+      <div class="foot-in">
+        <div class="logo"><span class="spark">✦</span><span class="name">My Magic Story</span></div>
+        <div class="foot-links">
+          <a href="#how">How it works</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#library">Story library</a>
+          <a href="#">Privacy</a>
+        </div>
+        <div class="foot-note">Made with My Magic Story · © 2026 VisualizePro</div>
+      </div>
+    </footer>
+
+  </div>
+
+<script>
+  (function(){
+    // ---- Story Studio: selectable chips assemble a live story seed ----
+    (function(){
+      var builder = document.getElementById('builder');
+      var out = document.getElementById('ribbonText');
+      if(!builder || !out) return;
+      function fragOf(w){ var c = builder.querySelector('.chip.sel[data-w="'+w+'"]'); return c ? c.getAttribute('data-frag') : ''; }
+      function F(w){ return '<span class="frag">'+fragOf(w)+'</span>'; }
+      function compose(){
+        out.innerHTML = F('who')+' is '+F('where')+', '+F('when')+'. Our hero '+F('what')+' — because '+F('why')+'.';
+      }
+      builder.addEventListener('click', function(e){
+        var chip = e.target.closest('.chip'); if(!chip) return;
+        var w = chip.getAttribute('data-w');
+        builder.querySelectorAll('.chip[data-w="'+w+'"]').forEach(function(c){ c.classList.remove('sel'); });
+        chip.classList.add('sel');
+        compose();
+      });
+      compose();
+    })();
+
+    // ---- Magic Words: toggle literary devices, sentence grows ----
+    (function(){
+      var out = document.getElementById('ssText');
+      if(!out) return;
+      var on = { adj:false, adv:false, sim:false, met:false, per:false };
+      function W(cls, txt){ return '<span class="w '+cls+'">'+txt+'</span>'; }
+      function build(){
+        var adj1 = on.adj ? W('adj','emerald')+' ' : '';
+        var adj2 = on.adj ? W('adj','rolling')+' ' : '';
+        var adv  = on.adv ? W('adv','silently')+' ' : '';
+        var s = 'The '+adj1+'dragon flew '+adv+'over the '+adj2+'hills';
+        if(on.sim) s += ', '+W('sim','like a whisper on the wind');
+        s += '.';
+        if(on.met) s += ' '+W('met','The sky was a velvet blanket above.');
+        if(on.per) s += ' '+W('per','The moon watched, and the stars whispered back.');
+        out.innerHTML = s;
+      }
+      document.querySelectorAll('.dev-chip').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var d = btn.getAttribute('data-dev');
+          on[d] = !on[d];
+          btn.classList.toggle('on', on[d]);
+          build();
+        });
+      });
+      build();
+    })();
+
+    // ---- client-side book cutout: drop the cream background from the user's render,
+    //      keep the book + their text, and remove the baked nav/CTA/watermark chrome ----
+    (function(){
+      var host = document.getElementById('bookHost');
+      if(!host) return;
+      var img = new Image();
+      img.onload = function(){
+        try{
+          var s = Math.min(1, 1300/img.naturalWidth);
+          var W = Math.round(img.naturalWidth*s), H = Math.round(img.naturalHeight*s);
+          var cv = document.createElement('canvas'); cv.width=W; cv.height=H;
+          var ctx = cv.getContext('2d'); ctx.drawImage(img,0,0,W,H);
+          var idata = ctx.getImageData(0,0,W,H), d = idata.data, N = W*H;
+          function clr(x0,y0,x1,y1){ for(var y=Math.round(y0*H);y<Math.round(y1*H);y++){ for(var x=Math.round(x0*W);x<Math.round(x1*W);x++){ d[(y*W+x)*4+3]=0; } } }
+          // strip baked chrome: top nav/dots, and the whole bottom band (CTA + see-how + annotation + watermark + cast shadow) with one clean cut
+          clr(0,0, 1,0.165); clr(0,0.84, 1,1);
+          // flood-fill the warm cream background to transparent (sky-glow is spared via r-g test)
+          var vis = new Uint8Array(N), st = new Int32Array(N), sp = 0;
+          function pu(p){ if(!vis[p]){ vis[p]=1; st[sp++]=p; } }
+          for(var x=0;x<W;x++){ pu(x); pu((H-1)*W+x); }
+          for(var y=0;y<H;y++){ pu(y*W); pu(y*W+W-1); }
+          while(sp>0){ var p=st[--sp], i=p*4;
+            if(d[i+3]===0){ var ax=p%W, ay=(p-ax)/W; if(ax>0)pu(p-1); if(ax<W-1)pu(p+1); if(ay>0)pu(p-W); if(ay<H-1)pu(p+W); continue; }
+            var r=d[i],g=d[i+1],b=d[i+2];
+            if(!((r-b)>=22 && (r-g)>=9 && (g-b)>=4 && (r+g+b)>=560)) continue;
+            d[i+3]=0; var bx=p%W, by=(p-bx)/W; if(bx>0)pu(p-1); if(bx<W-1)pu(p+1); if(by>0)pu(p-W); if(by<H-1)pu(p+W);
+          }
+          ctx.putImageData(idata,0,0);
+          // crop to the book's bounding box
+          var minx=W,miny=H,maxx=0,maxy=0;
+          for(var cy=0;cy<H;cy++){ for(var cx=0;cx<W;cx++){ if(d[(cy*W+cx)*4+3]>12){ if(cx<minx)minx=cx; if(cx>maxx)maxx=cx; if(cy<miny)miny=cy; if(cy>maxy)maxy=cy; } } }
+          var pad=4; minx=Math.max(0,minx-pad); miny=Math.max(0,miny-pad); maxx=Math.min(W-1,maxx+pad); maxy=Math.min(H-1,maxy+pad);
+          var cw=maxx-minx+1, ch=maxy-miny+1;
+          var oc=document.createElement('canvas'); oc.width=cw; oc.height=ch;
+          oc.getContext('2d').drawImage(cv, minx,miny,cw,ch, 0,0,cw,ch);
+          host.innerHTML=''; host.appendChild(oc);
+        }catch(e){ /* on any failure, keep the original image as-is */ }
+      };
+      img.src = 'assets/book-original.png';
+    })();
+
+    // scroll reveal
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var els = [].slice.call(document.querySelectorAll('.reveal'));
+    function reveal(el){ el.classList.add('in'); }
+    if(reduce || !('IntersectionObserver' in window)){
+      els.forEach(reveal);
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ reveal(e.target); io.unobserve(e.target); } });
+      }, { threshold:0, rootMargin:'0px 0px -10% 0px' });
+      els.forEach(function(el){ io.observe(el); });
+      // reveal anything already on screen at load (covers the hero / above-the-fold)
+      function initial(){ var vh=window.innerHeight||800; els.forEach(function(el){ var r=el.getBoundingClientRect(); if(r.top < vh*0.95 && r.bottom > 0){ reveal(el); } }); }
+      initial();
+      window.addEventListener('load', initial);
+      // safety net: never leave anything hidden
+      setTimeout(function(){ els.forEach(reveal); }, 1500);
+    }
+  })();
+</script>
+</body>
+</html>
