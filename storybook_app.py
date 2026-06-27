@@ -1590,6 +1590,11 @@ def main():
         st.error("⚠️ ANTHROPIC_API_KEY not found. Add it to your .env file.")
         return
 
+    # Temporary debug — remove after fixing images
+    with st.sidebar:
+        st.write("🔑 Anthropic key:", "✅" if client else "❌")
+        st.write("🔑 OpenAI key:", "✅" if _get_secret("OPENAI_API_KEY") else "❌")
+
     # App bar
     acol1, acol2 = st.columns([3, 1])
     with acol1:
