@@ -1210,12 +1210,14 @@ def render_step(step):
         if step["idx"] > 0:
             if st.button("← Back", key="nav_back", use_container_width=True):
                 st.session_state["wizard_step"] = step["idx"] - 1
+                st.session_state["_scroll_top"] = True
                 st.rerun()
 
     with nav_mid:
         if not step.get("required", True) and sid not in ("final","touch"):
             if st.button("Skip this step →", key="nav_skip"):
                 st.session_state["wizard_step"] = step["idx"] + 1
+                st.session_state["_scroll_top"] = True
                 st.rerun()
 
     with nav_r:
@@ -1233,6 +1235,7 @@ def render_step(step):
             next_clicked = st.button("Next →", key="nav_next", use_container_width=True, disabled=not ok)
             if next_clicked:
                 st.session_state["wizard_step"] = step["idx"] + 1
+                st.session_state["_scroll_top"] = True
                 st.rerun()
 
 
@@ -1304,7 +1307,8 @@ def _build_story(client):
                 page["text"], wiz["who_val"], wiz["where_val"], i+1, openai_client,
                 char_description=char_desc
             ) if openai_client else None
-        except Exception:
+        except Exception as img_err:
+            st.warning(f"Image {i+1} failed: {img_err}")
             url = None
         images.append(url)
 
@@ -1436,6 +1440,7 @@ def show_storybook():
         if page_i < total - 1:
             if st.button("Next page  ▶", use_container_width=True):
                 st.session_state["current_page"] += 1
+                st.session_state["_scroll_top"] = True
                 st.rerun()
 
     # The End
@@ -1590,6 +1595,15 @@ def main():
 
     st.markdown("<hr style='border:none;border-top:1.5px solid rgba(212,175,55,.16);margin:.3rem 0 1.2rem;'>",
                 unsafe_allow_html=True)
+
+    if st.session_state.pop("_scroll_top", False):
+        components.html("""<script>
+            var el = window.parent.document.querySelector('[data-testid="stAppViewBlockContainer"]')
+                  || window.parent.document.querySelector('section.main')
+                  || window.parent.document.querySelector('.main');
+            if (el) el.scrollTop = 0;
+            window.parent.scrollTo(0, 0);
+        </script>""", height=0)
 
     if st.session_state.get("show_library"):
         show_library()
