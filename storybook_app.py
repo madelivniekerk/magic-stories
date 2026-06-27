@@ -15,10 +15,11 @@ from reportlab.pdfgen import canvas as rl_canvas
 from reportlab.lib.pagesizes import landscape, A4
 from reportlab.lib.utils import ImageReader
 
-load_dotenv(r"C:\Users\madel\.env", override=True)
+load_dotenv(override=True)
 MODEL        = "claude-sonnet-4-6"
-STORIES_DIR  = r"C:\Users\madel\storybook_app\stories"
-TRACKER_PATH = r"C:\Users\madel\storybook_tracker.xlsx"
+BASE_DIR     = os.path.dirname(os.path.abspath(__file__))
+STORIES_DIR  = os.path.join(BASE_DIR, "stories")
+TRACKER_PATH = os.path.join(BASE_DIR, "storybook_tracker.xlsx")
 os.makedirs(STORIES_DIR, exist_ok=True)
 
 st.set_page_config(page_title="Magic Stories ✨", page_icon="📖", layout="wide")
@@ -520,11 +521,11 @@ DEVICE_NAMES = {
 
 # ── Backend functions ─────────────────────────────────────────────────────────
 def get_client():
-    key = os.getenv("ANTHROPIC_API_KEY")
+    key = os.getenv("ANTHROPIC_API_KEY") or st.secrets.get("ANTHROPIC_API_KEY")
     return Anthropic(api_key=key) if key else None
 
 def get_openai_client():
-    key = os.getenv("OPENAI_API_KEY")
+    key = os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY")
     return OpenAI(api_key=key) if key else None
 
 
