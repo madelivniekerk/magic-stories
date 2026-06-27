@@ -520,12 +520,21 @@ DEVICE_NAMES = {
 }
 
 # ── Backend functions ─────────────────────────────────────────────────────────
+def _get_secret(name):
+    val = os.getenv(name)
+    if val:
+        return val
+    try:
+        return st.secrets[name]
+    except Exception:
+        return None
+
 def get_client():
-    key = os.getenv("ANTHROPIC_API_KEY") or st.secrets.get("ANTHROPIC_API_KEY")
+    key = _get_secret("ANTHROPIC_API_KEY")
     return Anthropic(api_key=key) if key else None
 
 def get_openai_client():
-    key = os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY")
+    key = _get_secret("OPENAI_API_KEY")
     return OpenAI(api_key=key) if key else None
 
 
