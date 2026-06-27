@@ -1276,6 +1276,8 @@ def _build_story(client):
     }
 
     openai_client = get_openai_client()
+    if not openai_client:
+        st.warning("⚠️ OPENAI_API_KEY not found — illustrations will be skipped.")
     progress = st.empty()
     bar      = st.progress(0)
 
@@ -1317,7 +1319,7 @@ def _build_story(client):
                 char_description=char_desc
             ) if openai_client else None
         except Exception as img_err:
-            st.warning(f"Image {i+1} failed: {img_err}")
+            st.error(f"Image {i+1} failed: {img_err}")
             url = None
         images.append(url)
 
