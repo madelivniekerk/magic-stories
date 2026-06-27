@@ -1310,6 +1310,7 @@ def _build_story(client):
     pages = story.get("pages", [])
     bar.progress(20, "Painting illustrations with DALL-E 3…")
     images = []
+    img_errors = []
     for i, page in enumerate(pages):
         pct = 20 + int((i + 1) / len(pages) * 75)
         bar.progress(pct, f"Painting illustration {i+1} of {len(pages)}… 🖌️")
@@ -1319,7 +1320,7 @@ def _build_story(client):
                 char_description=char_desc
             ) if openai_client else None
         except Exception as img_err:
-            st.error(f"Image {i+1} failed: {img_err}")
+            img_errors.append(f"Image {i+1}: {img_err}")
             url = None
         images.append(url)
 
@@ -1332,6 +1333,7 @@ def _build_story(client):
 
     st.session_state["story_data"]   = story
     st.session_state["images"]       = images
+    st.session_state["img_errors"]   = img_errors
     st.session_state["current_page"] = 0
     st.session_state["show_cover"]   = True
     st.rerun()
@@ -1341,6 +1343,8 @@ def _build_story(client):
 def show_storybook():
     story  = st.session_state["story_data"]
     images = st.session_state["images"]
+    for err in st.session_state.pop("img_errors", []):
+        st.error(err)
     pages  = story.get("pages",[])
     title  = story.get("title","My Story")
     total  = len(pages)
