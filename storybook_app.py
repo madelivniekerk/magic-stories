@@ -635,8 +635,9 @@ def generate_image(page_text, character, setting, page_num, openai_client,
         prompt = (f"{char_lock}Scene from page {page_num}: {page_text[:220]} "
                   f"Setting: {setting}. {style}")
     response = openai_client.images.generate(
-        model="dall-e-3", prompt=prompt, size="1024x1024", quality="standard", n=1)
-    return response.data[0].url
+        model="gpt-image-1", prompt=prompt, size="1024x1024", quality="medium", n=1)
+    b64 = response.data[0].b64_json
+    return f"data:image/png;base64,{b64}"
 
 
 def save_story_to_tracker(story_id, wiz, story):
@@ -665,10 +666,14 @@ def save_story_to_disk(story_id, story, images, wiz):
     for i, url in enumerate(images):
         if url:
             try:
-                resp = requests.get(url, timeout=30)
+                import base64 as _b64
+                if url.startswith("data:"):
+                    img_bytes = _b64.b64decode(url.split(",", 1)[1])
+                else:
+                    img_bytes = requests.get(url, timeout=30).content
                 img_path = os.path.join(story_dir, f"page_{i}.jpg")
                 with open(img_path, "wb") as f:
-                    f.write(resp.content)
+                    f.write(img_bytes)
                 image_files.append(f"page_{i}.jpg")
             except Exception:
                 image_files.append(None)
