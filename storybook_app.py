@@ -1602,12 +1602,8 @@ def main():
         st.error("⚠️ ANTHROPIC_API_KEY not found. Add it to your .env file.")
         return
 
-    # Temporary debug — remove after fixing images
-    with st.sidebar:
-        st.write("🔑 Anthropic key:", "✅" if client else "❌")
-        st.write("🔑 OpenAI key:", "✅" if _get_secret("OPENAI_API_KEY") else "❌")
-
     # App bar
+    st.markdown('<div id="page-top"></div>', unsafe_allow_html=True)
     acol1, acol2 = st.columns([3, 1])
     with acol1:
         st.markdown("""
@@ -1626,22 +1622,14 @@ def main():
 
     if st.session_state.pop("_scroll_top", False):
         components.html("""<script>
-            (function() {
-                var selectors = [
-                    '[data-testid="stAppViewBlockContainer"]',
-                    '[data-testid="block-container"]',
-                    'section.main',
-                    '.main',
-                    '.stMainBlockContainer'
-                ];
-                selectors.forEach(function(s) {
-                    var el = window.parent.document.querySelector(s);
-                    if (el) el.scrollTop = 0;
-                });
-                window.parent.scrollTo(0, 0);
-                window.parent.document.documentElement.scrollTop = 0;
-                window.parent.document.body.scrollTop = 0;
-            })();
+            (function tryScroll(attempts) {
+                var anchor = window.parent.document.getElementById('page-top');
+                if (anchor) {
+                    anchor.scrollIntoView({behavior: 'instant', block: 'start'});
+                } else if (attempts > 0) {
+                    setTimeout(function(){ tryScroll(attempts - 1); }, 80);
+                }
+            })(10);
         </script>""", height=0)
 
     if st.session_state.get("show_library"):
