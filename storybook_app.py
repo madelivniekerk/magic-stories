@@ -127,18 +127,18 @@ a{color:var(--purple-lt) !important;}
 
 /* ── device rows (magic words) ── */
 .dev-row{
-  display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:14px;
-  background:rgba(10,6,24,.5); border:1.5px solid var(--panel-line); margin-bottom:8px;
+  display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:10px;
+  background:rgba(10,6,24,.5); border:1.5px solid var(--panel-line); margin-bottom:6px;
   transition:border-color .15s, background .15s;
 }
 .dev-row.on{background:rgba(94,31,142,.25); border-color:var(--gold);}
 .dev-row.locked{opacity:.5; cursor:not-allowed;}
-.dev-row .d-em{font-size:34px; flex-shrink:0;}
+.dev-row .d-em{font-size:24px; flex-shrink:0;}
 .dev-row .d-body{flex:1;}
-.dev-row .d-nm{font-family:'Cinzel',serif; font-size:17px; font-weight:600; color:var(--cream);}
-.dev-row .d-df{font-family:'Spectral',serif; font-style:italic; font-size:16px; color:var(--cream-soft);}
-.dev-row .d-lock{font-size:15px; color:var(--cream-soft);}
-.dev-row .d-tg{font-size:22px; color:var(--gold-lt);}
+.dev-row .d-nm{font-family:'Cinzel',serif; font-size:13px; font-weight:600; color:var(--cream);}
+.dev-row .d-df{font-family:'Spectral',serif; font-style:italic; font-size:12px; color:var(--cream-soft);}
+.dev-row .d-lock{font-size:12px; color:var(--cream-soft);}
+.dev-row .d-tg{font-size:18px; color:var(--gold-lt);}
 
 /* ── sentence preview ── */
 .dev-preview{
@@ -1125,8 +1125,8 @@ def render_magic_words(child_age):
     available = [d for d in DEVICE_OPTIONS if d["minAge"] <= child_age]
     locked    = [d for d in DEVICE_OPTIONS if d["minAge"] > child_age]
 
-    for i in range(0, len(available), 3):
-        pair = available[i:i+3]
+    for i in range(0, len(available), 2):
+        pair = available[i:i+2]
         cols = st.columns(len(pair))
         for col, dev in zip(cols, pair):
             with col:
