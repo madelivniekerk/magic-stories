@@ -1070,25 +1070,40 @@ _LEVEL_FALLBACK = {
 
 
 def generate_writing_nudge(step_id, text, level_lbl, level_age, client):
-    # Pick technique: cycle through selected magic words across writing steps
-    wiz_words = [w for w in st.session_state.get("wiz_words", []) if w in _DEVICE_NUDGE]
-    if wiz_words:
-        step_index = _NUDGE_WRITING_STEPS.index(step_id) if step_id in _NUDGE_WRITING_STEPS else 0
-        device_id  = wiz_words[step_index % len(wiz_words)]
-    else:
-        device_id  = _LEVEL_FALLBACK.get(level_lbl, "adj")
-    technique, instruction = _DEVICE_NUDGE[device_id]
+    # Adjectives + adverbs are always suggested on every step
+    base_techniques = ["adj", "adv"]
+
+    # Any other selected magic words cycle through one per step
+    wiz_words  = [w for w in st.session_state.get("wiz_words", []) if w in _DEVICE_NUDGE and w not in base_techniques]
+    step_index = _NUDGE_WRITING_STEPS.index(step_id) if step_id in _NUDGE_WRITING_STEPS else 0
+    extra_id   = wiz_words[step_index % len(wiz_words)] if wiz_words else None
 
     step_labels = {
         "who": "the hero", "villain": "the villain", "friend": "the sidekick",
         "where": "the setting", "when": "the time", "what": "the quest", "why": "the motivation",
     }
     about = step_labels.get(step_id, "their writing")
+
+    # Build the techniques section of the prompt
+    base_names = "an adjective (a describing word) and an adverb (a HOW word)"
+    if extra_id:
+        extra_tech, extra_instr = _DEVICE_NUDGE[extra_id]
+        techniques_block = (
+            f"You MUST suggest they:\n"
+            f"1. Add {base_names} to make the writing more vivid.\n"
+            f"2. Also try adding a {extra_tech}. {extra_instr}"
+        )
+    else:
+        techniques_block = (
+            f"You MUST suggest they add {base_names} to make the writing more vivid.\n"
+            f"Show a brief before/after example using their actual words."
+        )
+
     prompt = (
         f"A {level_age}-year-old ({level_lbl} reading level) wrote this about {about}:\n"
         f"\"{text.strip()}\"\n\n"
-        f"You MUST suggest they add a {technique}. {instruction}\n"
-        f"Write 1-2 warm, encouraging sentences. Use their exact words in your example. "
+        f"{techniques_block}\n"
+        f"Write 2-3 warm, encouraging sentences total. Use their exact words in your example. "
         f"Do NOT start with 'Great!', 'Wonderful!' or any filler praise. "
         f"Return ONLY the nudge, nothing else."
     )
