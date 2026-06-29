@@ -1269,7 +1269,10 @@ def render_step(step):
         }
         state_key = f"wiz_{sid}"
         child_age = st.session_state.get("wiz_level_age", 5)
-        opts = [o for o in options_map[sid] if o.get("minAge", 5) <= child_age]
+        all_opts  = options_map[sid]
+        advanced  = [o for o in all_opts if o.get("minAge", 5) > 5 and o.get("minAge", 5) <= child_age]
+        basic     = [o for o in all_opts if o.get("minAge", 5) == 5]
+        opts      = (advanced + basic)[:20]
         changed = render_card_grid(opts, state_key, accent, cols=10)
         if changed:
             st.rerun()
