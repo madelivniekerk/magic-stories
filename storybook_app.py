@@ -955,6 +955,8 @@ def render_writing_block(step_id, write_prompt, starters, accent):
     )
     st.session_state[more_key] = text_val
 
+    render_cast_reminder()
+
     wc = len(text_val.split()) if text_val.strip() else 0
     if wc == 0:
         msg, lvl = "✏️ Your turn — add a sentence or two!", "lvl0"
@@ -1318,7 +1320,6 @@ def render_step(step):
     </div>""", unsafe_allow_html=True)
 
     render_progress_trail()
-    render_cast_reminder()
 
     # Step content
     st.markdown(
