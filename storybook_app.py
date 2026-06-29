@@ -1786,6 +1786,96 @@ def show_library():
         st.rerun()
 
 
+# ── Landing page ──────────────────────────────────────────────────────────────
+def show_landing():
+    st.markdown("""
+    <style>
+    .land-hero{text-align:center;padding:3rem 1rem 2rem;}
+    .land-brand{font-family:'Cinzel',serif;font-size:3rem;font-weight:700;
+      background:linear-gradient(135deg,#d4af37,#c084fc);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;margin-bottom:.4rem;}
+    .land-tag{font-family:'Spectral',serif;font-style:italic;font-size:1.25rem;
+      color:#bda88a;margin-bottom:2.5rem;}
+    .land-features{display:flex;flex-wrap:wrap;justify-content:center;gap:1.2rem;
+      margin:0 auto 2.5rem;max-width:720px;}
+    .land-feat{background:rgba(20,5,45,.7);border:1px solid rgba(212,175,55,.18);
+      border-radius:14px;padding:1.1rem 1.4rem;flex:1 1 180px;text-align:left;}
+    .land-feat-em{font-size:1.8rem;display:block;margin-bottom:.4rem;}
+    .land-feat-nm{font-family:'Cinzel',serif;font-size:.8rem;color:#d4af37;
+      letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem;}
+    .land-feat-df{font-family:'Spectral',serif;font-size:.88rem;color:#bda88a;
+      font-style:italic;line-height:1.4;}
+    .land-divider{border:none;border-top:1px solid rgba(212,175,55,.15);margin:1.5rem 0;}
+    .land-signin-head{font-family:'Cinzel',serif;font-size:1rem;color:#c084fc;
+      letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:1rem;}
+    </style>
+    <div class="land-hero">
+      <div class="land-brand">✦ My Magic Story ✦</div>
+      <div class="land-tag">Where every child becomes the author of their own adventure</div>
+    </div>
+    <div class="land-features">
+      <div class="land-feat"><span class="land-feat-em">🤖</span>
+        <span class="land-feat-nm">AI Story Writing</span>
+        <span class="land-feat-df">Claude crafts a unique illustrated story around every word the child writes.</span></div>
+      <div class="land-feat"><span class="land-feat-em">🎓</span>
+        <span class="land-feat-nm">Age Appropriate</span>
+        <span class="land-feat-df">Four reading levels — Foundation to Advanced — with matching vocabulary and techniques.</span></div>
+      <div class="land-feat"><span class="land-feat-em">✏️</span>
+        <span class="land-feat-nm">Writing Nudges</span>
+        <span class="land-feat-df">Live coaching prompts guide kids to use adjectives, similes, metaphors and more.</span></div>
+      <div class="land-feat"><span class="land-feat-em">📖</span>
+        <span class="land-feat-nm">Story Library</span>
+        <span class="land-feat-df">Every story is saved, downloadable as a PDF, and ready to read again.</span></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # CTA buttons
+    cta_l, cta_m, cta_r = st.columns([1, 2, 1])
+    with cta_m:
+        if st.button("✦  Try for Free  ✦", use_container_width=True, key="land_try"):
+            st.session_state["_auth"] = "guest"
+            st.rerun()
+        st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+        if st.button("Sign In", use_container_width=True, key="land_signin"):
+            st.session_state["_show_signin"] = True
+            st.rerun()
+
+    # Sign-in form
+    if st.session_state.get("_show_signin"):
+        st.markdown("<hr class='land-divider'>", unsafe_allow_html=True)
+        st.markdown("<p class='land-signin-head'>Sign In</p>", unsafe_allow_html=True)
+        fi_l, fi_m, fi_r = st.columns([1, 2, 1])
+        with fi_m:
+            email    = st.text_input("Email", key="si_email", placeholder="your@email.com")
+            password = st.text_input("Password", key="si_pass", type="password", placeholder="••••••••")
+            si_l, si_r = st.columns(2)
+            with si_l:
+                if st.button("← Back", key="si_back", use_container_width=True):
+                    st.session_state.pop("_show_signin", None)
+                    st.rerun()
+            with si_r:
+                if st.button("Sign In →", key="si_go", use_container_width=True):
+                    valid_email    = _get_secret("APP_EMAIL")    or ""
+                    valid_password = _get_secret("APP_PASSWORD") or ""
+                    if email.strip() == valid_email and password == valid_password:
+                        st.session_state["_auth"]  = "user"
+                        st.session_state["_user_email"] = email.strip()
+                        st.session_state.pop("_show_signin", None)
+                        st.rerun()
+                    elif not valid_email:
+                        # No credentials configured — accept any non-empty login
+                        if email.strip() and len(password) >= 6:
+                            st.session_state["_auth"] = "user"
+                            st.session_state["_user_email"] = email.strip()
+                            st.session_state.pop("_show_signin", None)
+                            st.rerun()
+                        else:
+                            st.error("Please enter a valid email and a password of at least 6 characters.")
+                    else:
+                        st.error("Incorrect email or password.")
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     # JS: walk DOM to find card buttons (after .cgrid-row-marker) and make them invisible+overlaid.
@@ -1840,6 +1930,11 @@ def main():
 })();
 </script>""", height=1)
 
+    # Gate: show landing page until authenticated
+    if not st.session_state.get("_auth"):
+        show_landing()
+        return
+
     client = get_client()
     if not client:
         st.error("⚠️ ANTHROPIC_API_KEY not found. Add it to your .env file.")
@@ -1858,7 +1953,7 @@ def main():
 
     # App bar
     st.markdown('<div id="page-top"></div>', unsafe_allow_html=True)
-    acol1, acol2 = st.columns([3, 1])
+    acol1, acol2, acol3 = st.columns([3, 1, 1])
     with acol1:
         st.markdown("""
         <div class="ms-brand">
@@ -1869,6 +1964,11 @@ def main():
         lib_label = "← Builder" if st.session_state.get("show_library") else "📚 Story Library"
         if st.button(lib_label, use_container_width=True):
             st.session_state["show_library"] = not st.session_state.get("show_library", False)
+            st.rerun()
+    with acol3:
+        if st.button("Sign Out", use_container_width=True, key="signout"):
+            for k in list(st.session_state.keys()):
+                del st.session_state[k]
             st.rerun()
 
     st.markdown("<hr style='border:none;border-top:1.5px solid rgba(212,175,55,.16);margin:.3rem 0 1.2rem;'>",
