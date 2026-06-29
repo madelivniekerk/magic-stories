@@ -657,29 +657,69 @@ Rules:
     return json.loads(raw)
 
 
-def generate_character_description(character, setting, story_title, client):
+_ILLUSTRATION_STYLE = {
+    "Foundation":   ("bright cheerful watercolour children's book illustration, "
+                     "soft rounded shapes, very cute and friendly characters, warm pastel palette, "
+                     "simple backgrounds suitable for ages 5-6"),
+    "Early Reader": ("expressive watercolour children's book illustration, "
+                     "colourful and lively, warm palette, clear expressive characters, "
+                     "suitable for ages 7-8"),
+    "Confident":    ("detailed ink-and-watercolour fantasy illustration, "
+                     "more dramatic lighting and composition, vivid colours, "
+                     "inspired by middle-grade adventure book covers, suitable for ages 9-10"),
+    "Advanced":     ("dramatic fantasy digital illustration, rich deep colours, "
+                     "cinematic lighting, sophisticated composition with detailed environments, "
+                     "inspired by young-adult fantasy novel artwork, suitable for ages 11-12"),
+}
+
+
+def generate_character_description(wiz, client):
+    hero    = wiz.get("who_val", "")
+    villain = wiz.get("villain_val", "").strip()
+    friend  = wiz.get("friend_val", "").strip()
+    setting = wiz.get("where_val", "")
+    title   = wiz.get("story_title", "")
+    level   = wiz.get("level_lbl", "Early Reader")
+    style   = _ILLUSTRATION_STYLE.get(level, _ILLUSTRATION_STYLE["Early Reader"])
+    more    = wiz.get("more", {})
+
+    hero_extra    = (more.get("who", "") or "").strip()
+    villain_extra = (more.get("villain", "") or "").strip()
+    friend_extra  = (more.get("friend", "") or "").strip()
+
+    parts = [f"Hero: {hero}" + (f" — {hero_extra}" if hero_extra else "")]
+    if villain:
+        parts.append(f"Villain: {villain}" + (f" — {villain_extra}" if villain_extra else ""))
+    if friend:
+        parts.append(f"Sidekick: {friend}" + (f" — {friend_extra}" if friend_extra else ""))
+
     resp = client.messages.create(
-        model=MODEL, max_tokens=150,
-        messages=[{"role":"user","content":
-            f"Write a SHORT (2-3 sentences) visual description of this character for a DALL-E 3 illustration. "
-            f"Character: {character}. Story: {story_title}. Setting: {setting}. "
-            f"Be VERY specific about exact colours, clothing, distinctive features. "
-            f"Keep it compatible with bright watercolour children's book style. Return ONLY the description."}]
+        model=MODEL, max_tokens=300,
+        messages=[{"role": "user", "content":
+            f"Write a concise visual description of EACH character below for use in "
+            f"consistent illustrated story pages. Story: '{title}'. Setting: {setting}.\n"
+            f"{chr(10).join(parts)}\n\n"
+            f"For EACH character give 2 sentences: exact species/type/age/gender, "
+            f"specific colours of skin/fur/hair/eyes, distinctive clothing or features. "
+            f"A robot must look like a robot, a fairy must have wings, etc — honour the character type exactly. "
+            f"Label each clearly as 'Hero:', 'Villain:', 'Sidekick:'. "
+            f"Style reference: {style}. Return ONLY the descriptions."}]
     )
     return resp.content[0].text.strip()
 
 
-def generate_image(page_text, character, setting, page_num, openai_client,
-                   custom_hint="", char_description=""):
-    style = ("Art style: bright cheerful watercolour children's book illustration, "
-             "soft edges, warm pastel palette. No text or letters in the image.")
-    char_lock = (f"The main character MUST look exactly like this: {char_description} "
-                 if char_description else f"Character: {character}. ")
-    if custom_hint:
-        prompt = f"{char_lock}Scene: {custom_hint} Setting: {setting}. {style}"
-    else:
-        prompt = (f"{char_lock}Scene from page {page_num}: {page_text[:220]} "
-                  f"Setting: {setting}. {style}")
+def generate_image(page_text, setting, page_num, openai_client,
+                   char_description="", level_lbl="Early Reader"):
+    style = _ILLUSTRATION_STYLE.get(level_lbl, _ILLUSTRATION_STYLE["Early Reader"])
+    char_block = (f"CHARACTER SHEET — every character MUST match these descriptions exactly "
+                  f"in every illustration:\n{char_description}\n\n") if char_description else ""
+    prompt = (
+        f"{char_block}"
+        f"Scene from page {page_num}: {page_text[:280]}\n"
+        f"Setting: {setting}.\n"
+        f"Art style: {style}.\n"
+        f"No text, words, or letters anywhere in the image."
+    )
     response = openai_client.images.generate(
         model="gpt-image-1", prompt=prompt, size="1024x1024", quality="medium", n=1)
     b64 = response.data[0].b64_json
@@ -1550,10 +1590,10 @@ def _build_story(client):
         progress.empty(); bar.empty()
         return
 
-    bar.progress(15, "Designing your character…")
+    bar.progress(15, "Designing your characters…")
+    wiz_with_title = {**wiz, "story_title": story.get("title", "")}
     try:
-        char_desc = generate_character_description(wiz["who_val"], wiz["where_val"],
-                                                   story.get("title",""), client)
+        char_desc = generate_character_description(wiz_with_title, client)
     except Exception:
         char_desc = ""
     st.session_state["char_description"] = char_desc
@@ -1567,8 +1607,8 @@ def _build_story(client):
         bar.progress(pct, f"Painting illustration {i+1} of {len(pages)}… 🖌️")
         try:
             url = generate_image(
-                page["text"], wiz["who_val"], wiz["where_val"], i+1, openai_client,
-                char_description=char_desc
+                page["text"], wiz["where_val"], i+1, openai_client,
+                char_description=char_desc, level_lbl=wiz.get("level_lbl", "Early Reader")
             ) if openai_client else None
         except Exception as img_err:
             img_errors.append(f"Image {i+1}: {img_err}")
