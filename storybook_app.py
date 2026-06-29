@@ -1788,92 +1788,331 @@ def show_library():
 
 # ── Landing page ──────────────────────────────────────────────────────────────
 def show_landing():
-    st.markdown("""
-    <style>
-    .land-hero{text-align:center;padding:3rem 1rem 2rem;}
-    .land-brand{font-family:'Cinzel',serif;font-size:3rem;font-weight:700;
-      background:linear-gradient(135deg,#d4af37,#c084fc);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-      background-clip:text;margin-bottom:.4rem;}
-    .land-tag{font-family:'Spectral',serif;font-style:italic;font-size:1.25rem;
-      color:#bda88a;margin-bottom:2.5rem;}
-    .land-features{display:flex;flex-wrap:wrap;justify-content:center;gap:1.2rem;
-      margin:0 auto 2.5rem;max-width:720px;}
-    .land-feat{background:rgba(20,5,45,.7);border:1px solid rgba(212,175,55,.18);
-      border-radius:14px;padding:1.1rem 1.4rem;flex:1 1 180px;text-align:left;}
-    .land-feat-em{font-size:1.8rem;display:block;margin-bottom:.4rem;}
-    .land-feat-nm{font-family:'Cinzel',serif;font-size:.8rem;color:#d4af37;
-      letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.3rem;}
-    .land-feat-df{font-family:'Spectral',serif;font-size:.88rem;color:#bda88a;
-      font-style:italic;line-height:1.4;}
-    .land-divider{border:none;border-top:1px solid rgba(212,175,55,.15);margin:1.5rem 0;}
-    .land-signin-head{font-family:'Cinzel',serif;font-size:1rem;color:#c084fc;
-      letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:1rem;}
-    </style>
-    <div class="land-hero">
-      <div class="land-brand">✦ My Magic Story ✦</div>
-      <div class="land-tag">Where every child becomes the author of their own adventure</div>
-    </div>
-    <div class="land-features">
-      <div class="land-feat"><span class="land-feat-em">🤖</span>
-        <span class="land-feat-nm">AI Story Writing</span>
-        <span class="land-feat-df">Claude crafts a unique illustrated story around every word the child writes.</span></div>
-      <div class="land-feat"><span class="land-feat-em">🎓</span>
-        <span class="land-feat-nm">Age Appropriate</span>
-        <span class="land-feat-df">Four reading levels — Foundation to Advanced — with matching vocabulary and techniques.</span></div>
-      <div class="land-feat"><span class="land-feat-em">✏️</span>
-        <span class="land-feat-nm">Writing Nudges</span>
-        <span class="land-feat-df">Live coaching prompts guide kids to use adjectives, similes, metaphors and more.</span></div>
-      <div class="land-feat"><span class="land-feat-em">📖</span>
-        <span class="land-feat-nm">Story Library</span>
-        <span class="land-feat-df">Every story is saved, downloadable as a PDF, and ready to read again.</span></div>
-    </div>
-    """, unsafe_allow_html=True)
+    # ── inject landing-specific CSS (design handoff palette + components) ──
+    st.markdown("""<style>
+    :root{
+      --bg1:#1a2b49;--bg2:#0c1426;--bg3:#05080f;
+      --panel-line:rgba(230,200,138,.16);
+      --gold:#d8b257;--gold-lt:#f0d894;--gold-deep:#b1862f;
+      --purple:#7b2fa8;--purple-lt:#b06fd8;
+      --cream-text:#ece3cd;--cream-soft:#aebbcf;
+      --ink:#2c2417;--ink-soft:#6c6047;
+      --page:#fbf6ea;--page-2:#f2e7cd;--page-edge:#e2cfa6;
+    }
+    /* star field */
+    .lsky{position:fixed;inset:0;z-index:0;pointer-events:none;
+      background:radial-gradient(150% 90% at 50% -10%,#243a60 0%,#14223c 34%,var(--bg2) 64%,var(--bg3) 100%);}
+    .lsky .lstars{position:absolute;inset:-2px;
+      background-image:
+        radial-gradient(1.4px 1.4px at 20% 30%,rgba(243,236,214,.9),transparent),
+        radial-gradient(1.2px 1.2px at 70% 18%,rgba(243,236,214,.7),transparent),
+        radial-gradient(1.6px 1.6px at 42% 62%,rgba(243,236,214,.8),transparent),
+        radial-gradient(1.1px 1.1px at 88% 48%,rgba(243,236,214,.6),transparent),
+        radial-gradient(1.3px 1.3px at 12% 78%,rgba(243,236,214,.7),transparent),
+        radial-gradient(1.5px 1.5px at 60% 85%,rgba(243,236,214,.75),transparent),
+        radial-gradient(1.2px 1.2px at 33% 12%,rgba(243,236,214,.6),transparent),
+        radial-gradient(1.4px 1.4px at 92% 80%,rgba(243,236,214,.7),transparent);
+      background-size:760px 760px;}
+    .lsky .lstars2{position:absolute;inset:-2px;
+      background-image:
+        radial-gradient(1px 1px at 15% 50%,rgba(216,178,87,.7),transparent),
+        radial-gradient(1.2px 1.2px at 55% 35%,rgba(216,178,87,.55),transparent),
+        radial-gradient(1px 1px at 80% 65%,rgba(216,178,87,.6),transparent),
+        radial-gradient(1px 1px at 38% 88%,rgba(216,178,87,.5),transparent);
+      background-size:520px 520px;animation:ltwinkle 6s ease-in-out infinite;}
+    @keyframes ltwinkle{0%,100%{opacity:.5}50%{opacity:1}}
+    .lsky .lmoon{position:absolute;top:-12%;left:50%;transform:translateX(-50%);
+      width:1200px;height:760px;
+      background:radial-gradient(ellipse at 50% 40%,rgba(90,130,210,.28),rgba(90,130,210,0) 62%);}
+    /* nav */
+    .lnav{display:flex;align-items:center;justify-content:space-between;
+      padding:22px 0;max-width:1180px;margin:0 auto;position:relative;z-index:2;}
+    .llogo{display:flex;align-items:center;gap:10px;}
+    .llogo .lspark{color:var(--gold-lt);font-size:24px;}
+    .llogo .lname{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:26px;color:var(--cream-text);}
+    /* hero */
+    .lhero{text-align:center;padding:10px 0 48px;position:relative;z-index:1;}
+    .lbook-wrap{width:min(1080px,96vw);margin:0 auto 18px;border-radius:16px;overflow:hidden;
+      box-shadow:0 44px 74px -32px rgba(0,0,0,.72),0 12px 22px -14px rgba(0,0,0,.5);}
+    .lbook-wrap img{width:100%;height:auto;display:block;}
+    .lhero-line{max-width:46ch;margin:0 auto 22px;
+      font-family:'Spectral',serif;font-style:italic;font-size:clamp(15px,1.6vw,20px);
+      line-height:1.55;color:#cdbfa3;}
+    .lhero-line b{font-style:normal;font-weight:600;color:var(--gold-lt);}
+    .ltrust{display:flex;align-items:center;justify-content:center;gap:28px;
+      flex-wrap:wrap;margin-top:12px;}
+    .ltrust .litem{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;
+      color:var(--cream-soft);font-family:'Nunito',sans-serif;}
+    .ltrust .ltick{width:20px;height:20px;border-radius:50%;
+      background:rgba(216,178,87,.14);border:1.5px solid rgba(216,178,87,.5);
+      color:var(--gold-lt);display:grid;place-items:center;font-size:10px;}
+    .ltrust .lsep{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.6;}
+    /* sections */
+    .lsec{padding:clamp(50px,7vw,96px) 0;position:relative;z-index:1;}
+    .lsec-head{text-align:center;max-width:680px;margin:0 auto clamp(36px,5vw,56px);}
+    .lsec-eye{font-family:'Cinzel',serif;font-style:italic;font-weight:500;
+      font-size:clamp(14px,1.5vw,17px);letter-spacing:.05em;color:var(--gold-lt);margin:0 0 12px;}
+    .lsec-title{font-family:'Cinzel Decorative',serif;font-weight:700;
+      font-size:clamp(26px,3.4vw,44px);line-height:1.14;color:var(--cream-text);margin:0;}
+    .lsec-title em{font-style:normal;color:var(--gold-lt);}
+    .lrule{display:flex;align-items:center;justify-content:center;gap:12px;margin:16px auto 0;
+      color:var(--gold);opacity:.7;}
+    .lrule .lln{width:52px;height:1.5px;background:linear-gradient(90deg,transparent,var(--gold));}
+    .lrule .lln.r{background:linear-gradient(90deg,var(--gold),transparent);}
+    .lsec-sub{font-family:'Spectral',serif;font-size:clamp(14px,1.5vw,17px);line-height:1.6;
+      color:var(--cream-soft);margin:14px auto 0;max-width:52ch;}
+    /* how-it-works steps */
+    .lsteps{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,2vw,22px);}
+    .lstep{position:relative;padding:28px 22px 26px;border-radius:18px;
+      background:linear-gradient(180deg,rgba(22,36,63,.7),rgba(16,28,51,.7));
+      border:1.5px solid var(--panel-line);
+      box-shadow:0 20px 40px -26px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.04);}
+    .lstep .lnum{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:28px;
+      width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin-bottom:18px;
+      color:var(--gold-lt);background:radial-gradient(circle at 50% 40%,rgba(216,178,87,.18),rgba(216,178,87,.04));
+      border:1.5px solid rgba(216,178,87,.4);}
+    .lstep h3{font-family:'Cinzel',serif;font-weight:600;font-size:17px;color:var(--cream-text);margin:0 0 9px;}
+    .lstep p{font-family:'Spectral',serif;font-size:14px;line-height:1.55;color:var(--cream-soft);margin:0;}
+    .lstep .lglyph{position:absolute;top:22px;right:22px;font-size:16px;color:var(--gold);opacity:.5;}
+    /* pricing */
+    .lpricing{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,2vw,22px);
+      max-width:1020px;margin:0 auto;}
+    .lpcard{position:relative;padding:30px 26px;border-radius:20px;
+      background:linear-gradient(180deg,var(--page),var(--page-2));
+      border:1.5px solid var(--page-edge);color:var(--ink);
+      box-shadow:0 26px 50px -28px rgba(0,0,0,.7);}
+    .lpcard.feat{transform:translateY(-14px);border:2px solid var(--gold);padding-top:40px;
+      box-shadow:0 34px 64px -26px rgba(0,0,0,.8),0 0 0 5px rgba(216,178,87,.1);}
+    .lpbadge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+      font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.06em;
+      background:linear-gradient(180deg,#e6c878,#c89a3c);color:#241a06;
+      padding:6px 14px;border-radius:999px;white-space:nowrap;
+      box-shadow:0 8px 18px -6px rgba(216,178,87,.6);}
+    .lplan{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:22px;color:var(--ink);}
+    .lptag{font-family:'Spectral',serif;font-size:13.5px;color:var(--ink-soft);margin:7px 0 16px;min-height:38px;line-height:1.4;}
+    .lpamt{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:42px;line-height:1;color:var(--purple);}
+    .lpper{font-family:'Spectral',serif;font-size:12.5px;color:var(--ink-soft);margin:6px 0 20px;}
+    .lpfeat{list-style:none;margin:0;padding:16px 0 0;border-top:1.5px dashed rgba(44,36,23,.18);
+      display:flex;flex-direction:column;gap:11px;}
+    .lpfeat li{display:flex;align-items:center;gap:10px;
+      font-family:'Spectral',serif;font-size:13.5px;color:var(--ink);}
+    .lpfeat .lck{flex:0 0 18px;width:18px;height:18px;border-radius:50%;display:grid;
+      place-items:center;font-size:10px;font-weight:800;
+      color:var(--purple);background:rgba(123,47,168,.12);border:1.5px solid rgba(123,47,168,.4);}
+    /* closing CTA band */
+    .lcta-band{position:relative;text-align:center;
+      padding:clamp(42px,6vw,70px) clamp(22px,5vw,60px);border-radius:24px;overflow:hidden;
+      background:linear-gradient(160deg,#243a60 0%,#16243f 48%,#0e1730 100%);
+      border:1.5px solid rgba(216,178,87,.32);
+      box-shadow:0 40px 80px -36px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.05);}
+    .lcta-band h2{font-family:'Cinzel Decorative',serif;font-weight:700;
+      font-size:clamp(26px,3.8vw,48px);line-height:1.12;color:var(--cream-text);margin:0 0 14px;}
+    .lcta-band h2 em{font-style:normal;color:var(--gold-lt);}
+    .lcta-band p{font-family:'Spectral',serif;font-size:clamp(14px,1.5vw,17px);
+      color:var(--cream-soft);margin:0 auto 0;max-width:48ch;line-height:1.6;}
+    .lsparkline{font-size:22px;color:var(--gold-lt);letter-spacing:10px;margin-bottom:6px;}
+    /* footer */
+    .lfoot{padding:36px 0 44px;border-top:1.5px solid rgba(230,200,138,.14);
+      position:relative;z-index:1;max-width:1180px;margin:0 auto;}
+    .lfoot-in{display:flex;align-items:center;justify-content:space-between;
+      gap:18px;flex-wrap:wrap;}
+    .lfoot-links{display:flex;gap:22px;}
+    .lfoot-links a{font-family:'Cinzel',serif;font-size:13px;color:var(--cream-soft);text-decoration:none;}
+    .lfoot-note{font-family:'Spectral',serif;font-size:12px;color:#7b8aa3;}
+    /* sign-in form */
+    .lsi-head{font-family:'Cinzel',serif;font-size:1rem;color:#c084fc;
+      letter-spacing:.12em;text-transform:uppercase;text-align:center;margin:2rem 0 .8rem;}
+    /* container utility */
+    .lcon{max-width:1180px;margin:0 auto;position:relative;z-index:1;}
+    @media(max-width:880px){.lsteps{grid-template-columns:1fr 1fr;}.lpricing{grid-template-columns:1fr;max-width:420px;}.lpcard.feat{transform:none;}}
+    @media(max-width:520px){.lsteps{grid-template-columns:1fr;}}
+    </style>""", unsafe_allow_html=True)
 
-    # CTA buttons
-    cta_l, cta_m, cta_r = st.columns([1, 2, 1])
+    # Star field background
+    st.markdown("""
+    <div class="lsky">
+      <div class="lmoon"></div>
+      <div class="lstars"></div>
+      <div class="lstars2"></div>
+    </div>""", unsafe_allow_html=True)
+
+    # Nav
+    st.markdown("""
+    <div class="lcon">
+      <nav class="lnav">
+        <div class="llogo"><span class="lspark">✦</span><span class="lname">My Magic Story</span></div>
+      </nav>
+    </div>""", unsafe_allow_html=True)
+
+    # Hero — book image
+    book_path = os.path.join(BASE_DIR, "assets", "book-original.png")
+    if os.path.exists(book_path):
+        _, hero_col, _ = st.columns([1, 6, 1])
+        with hero_col:
+            st.image(book_path, use_container_width=True)
+
+    st.markdown("""
+    <div class="lhero lcon">
+      <p class="lhero-line">Personalised adventures that put your child in charge — built to
+        <b>spark imagination</b> and <b>hold wandering attention</b>,
+        for curious kids and focus-finding minds alike.</p>
+    </div>""", unsafe_allow_html=True)
+
+    # Primary CTAs
+    cta_l, cta_m, cta_r = st.columns([2, 3, 2])
     with cta_m:
-        if st.button("✦  Try for Free  ✦", use_container_width=True, key="land_try"):
+        if st.button("✦  Create your story free  →", use_container_width=True, key="land_try"):
             st.session_state["_auth"] = "guest"
             st.rerun()
-        st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
         if st.button("Sign In", use_container_width=True, key="land_signin"):
-            st.session_state["_show_signin"] = True
+            st.session_state["_show_signin"] = not st.session_state.get("_show_signin", False)
             st.rerun()
+
+    st.markdown("""
+    <div class="lhero lcon" style="padding:0;">
+      <div class="ltrust">
+        <span class="litem"><span class="ltick">✓</span> First story free, forever</span>
+        <span class="lsep"></span>
+        <span class="litem"><span class="ltick">✓</span> Short, focus-friendly pages</span>
+        <span class="lsep"></span>
+        <span class="litem"><span class="ltick">✓</span> Made for ages 5–12</span>
+      </div>
+    </div>""", unsafe_allow_html=True)
 
     # Sign-in form
     if st.session_state.get("_show_signin"):
-        st.markdown("<hr class='land-divider'>", unsafe_allow_html=True)
-        st.markdown("<p class='land-signin-head'>Sign In</p>", unsafe_allow_html=True)
+        st.markdown("<hr style='border:none;border-top:1px solid rgba(212,175,55,.2);margin:1.5rem 0;'>", unsafe_allow_html=True)
+        st.markdown("<p class='lsi-head'>Sign In to your account</p>", unsafe_allow_html=True)
         fi_l, fi_m, fi_r = st.columns([1, 2, 1])
         with fi_m:
             email    = st.text_input("Email", key="si_email", placeholder="your@email.com")
             password = st.text_input("Password", key="si_pass", type="password", placeholder="••••••••")
             si_l, si_r = st.columns(2)
             with si_l:
-                if st.button("← Back", key="si_back", use_container_width=True):
+                if st.button("← Cancel", key="si_back", use_container_width=True):
                     st.session_state.pop("_show_signin", None)
                     st.rerun()
             with si_r:
                 if st.button("Sign In →", key="si_go", use_container_width=True):
                     valid_email    = _get_secret("APP_EMAIL")    or ""
                     valid_password = _get_secret("APP_PASSWORD") or ""
-                    if email.strip() == valid_email and password == valid_password:
-                        st.session_state["_auth"]  = "user"
+                    if valid_email and email.strip() == valid_email and password == valid_password:
+                        st.session_state["_auth"] = "user"
                         st.session_state["_user_email"] = email.strip()
                         st.session_state.pop("_show_signin", None)
                         st.rerun()
-                    elif not valid_email:
-                        # No credentials configured — accept any non-empty login
-                        if email.strip() and len(password) >= 6:
-                            st.session_state["_auth"] = "user"
-                            st.session_state["_user_email"] = email.strip()
-                            st.session_state.pop("_show_signin", None)
-                            st.rerun()
-                        else:
-                            st.error("Please enter a valid email and a password of at least 6 characters.")
+                    elif not valid_email and email.strip() and len(password) >= 6:
+                        st.session_state["_auth"] = "user"
+                        st.session_state["_user_email"] = email.strip()
+                        st.session_state.pop("_show_signin", None)
+                        st.rerun()
                     else:
                         st.error("Incorrect email or password.")
+
+    # How it works
+    st.markdown("""
+    <div class="lsec lcon">
+      <div class="lsec-head">
+        <p class="lsec-eye">how the magic works</p>
+        <h2 class="lsec-title">Where big imaginations become <em>illustrated books.</em></h2>
+        <div class="lrule"><span class="lln"></span><span>✦</span><span class="lln r"></span></div>
+        <p class="lsec-sub">Four playful steps turn your child's own ideas into an adventure — with short, vivid pages built to hold attention and reward every "what if?".</p>
+      </div>
+      <div class="lsteps">
+        <div class="lstep"><span class="lglyph">✦</span>
+          <div class="lnum">I</div><h3>Your child leads</h3>
+          <p>They pick the reading level, the hero, the world and the quest — a real sense of control from page one.</p></div>
+        <div class="lstep"><span class="lglyph">✦</span>
+          <div class="lnum">II</div><h3>Spark a "what if?"</h3>
+          <p>Add one imaginative twist — a pet dragon, a secret door, a brave new friend — and watch their idea steer the whole story.</p></div>
+        <div class="lstep"><span class="lglyph">✦</span>
+          <div class="lnum">III</div><h3>Short, vivid pages</h3>
+          <p>Six bite-sized pages, each with its own illustration — easy to follow, quick to finish, never overwhelming.</p></div>
+        <div class="lstep"><span class="lglyph">✦</span>
+          <div class="lnum">IV</div><h3>Read it &amp; keep it</h3>
+          <p>Read together, celebrate the hero, fine-tune any page, then download the PDF to keep forever.</p></div>
+      </div>
+    </div>""", unsafe_allow_html=True)
+
+    # Pricing
+    st.markdown("""
+    <div class="lsec lcon">
+      <div class="lsec-head">
+        <p class="lsec-eye">simple, gentle pricing</p>
+        <h2 class="lsec-title">Buy only the books <em>you'll actually make.</em></h2>
+        <div class="lrule"><span class="lln"></span><span>✦</span><span class="lln r"></span></div>
+        <p class="lsec-sub">No subscriptions, no surprises. Your first story is free — then grab a bundle of book credits whenever you're ready. They never expire.</p>
+      </div>
+      <div class="lpricing">
+        <div class="lpcard">
+          <div class="lplan">Story Starter</div>
+          <p class="lptag">A handful of adventures to share.</p>
+          <div class="lpamt">A$9.90</div>
+          <p class="lpper">5 books · A$1.98 each</p>
+          <ul class="lpfeat">
+            <li><span class="lck">✓</span> <strong>5</strong> complete magic books</li>
+            <li><span class="lck">✓</span> All heroes &amp; worlds</li>
+            <li><span class="lck">✓</span> PDF download to keep</li>
+            <li><span class="lck">✓</span> Credits never expire</li>
+          </ul>
+        </div>
+        <div class="lpcard feat">
+          <span class="lpbadge">✦ Best value</span>
+          <div class="lplan">Story Bundle ★</div>
+          <p class="lptag">The family favourite — more tales, less per book.</p>
+          <div class="lpamt">A$17.90</div>
+          <p class="lpper">10 books · A$1.79 each</p>
+          <ul class="lpfeat">
+            <li><span class="lck">✓</span> <strong>10</strong> complete magic books</li>
+            <li><span class="lck">✓</span> All heroes &amp; worlds</li>
+            <li><span class="lck">✓</span> PDF download to keep</li>
+            <li><span class="lck">✓</span> <strong>Save 10%</strong> vs the starter</li>
+          </ul>
+        </div>
+        <div class="lpcard">
+          <div class="lplan">Story Library</div>
+          <p class="lptag">A whole shelf of adventures to grow into.</p>
+          <div class="lpamt">A$29.90</div>
+          <p class="lpper">20 books · A$1.50 each</p>
+          <ul class="lpfeat">
+            <li><span class="lck">✓</span> <strong>20</strong> complete magic books</li>
+            <li><span class="lck">✓</span> All heroes &amp; worlds</li>
+            <li><span class="lck">✓</span> PDF download to keep</li>
+            <li><span class="lck">✓</span> Priority illustration</li>
+          </ul>
+        </div>
+      </div>
+    </div>""", unsafe_allow_html=True)
+
+    # Closing CTA band
+    st.markdown("""
+    <div class="lsec lcon" style="padding-bottom:clamp(60px,9vw,100px);">
+      <div class="lcta-band">
+        <div class="lsparkline">✦ ✦ ✦</div>
+        <p class="lsec-eye">the page is open…</p>
+        <h2>The story is waiting. <em>Your child is the hero.</em></h2>
+        <p>No credit card. One little click and their imagination takes the lead.</p>
+      </div>
+    </div>""", unsafe_allow_html=True)
+
+    cta2_l, cta2_m, cta2_r = st.columns([2, 3, 2])
+    with cta2_m:
+        if st.button("✦  Create your story free  →", use_container_width=True, key="land_try2"):
+            st.session_state["_auth"] = "guest"
+            st.rerun()
+
+    # Footer
+    st.markdown("""
+    <div class="lfoot">
+      <div class="lfoot-in">
+        <div class="llogo"><span class="lspark">✦</span><span class="lname">My Magic Story</span></div>
+        <div class="lfoot-links">
+          <a href="#">How it works</a><a href="#">Pricing</a><a href="#">Privacy</a>
+        </div>
+        <div class="lfoot-note">Made with My Magic Story · © 2026 VisualizePro</div>
+      </div>
+    </div>""", unsafe_allow_html=True)
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
