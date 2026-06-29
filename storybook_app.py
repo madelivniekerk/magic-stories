@@ -57,8 +57,8 @@ header[data-testid="stHeader"],#MainMenu,footer{ display:none !important; }
 @media(max-width:960px){
   .block-container{ max-width:100% !important; padding-left:1.25rem !important; padding-right:1.25rem !important; }
 }
-h1{font-family:'Fredoka One',cursive !important; font-size:clamp(30px,4.5vw,46px) !important; color:#fff !important; margin:8px 0 0 !important;}
-h2{font-family:'Fredoka One',cursive !important; font-size:clamp(28px,3.8vw,40px) !important; color:#fff !important; margin:8px 0 6px !important;}
+h1{font-family:'Fredoka One',cursive !important; font-size:clamp(30px,4.5vw,46px) !important; color:#e8d5f0 !important; margin:8px 0 0 !important;}
+h2{font-family:'Fredoka One',cursive !important; font-size:clamp(28px,3.8vw,40px) !important; color:#e8d5f0 !important; margin:8px 0 6px !important;}
 h3{font-family:'Cinzel',serif !important; color:var(--cream) !important;}
 p,li,label{color:var(--cream) !important; font-family:'Nunito',sans-serif !important;}
 a{color:var(--purple-lt) !important;}
