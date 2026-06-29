@@ -295,7 +295,7 @@ DEVICE_OPTIONS = [
     {"id":"clf", "em":"🎢","nm":"Cliffhangers",              "df":"End a moment on a surprise that makes readers want more.",   "minAge":8},
     {"id":"vso", "em":"🔀","nm":"Varied Sentence Openers",   "df":"Start sentences in different ways to keep writing lively.",  "minAge":8},
     {"id":"met", "em":"🌌","nm":"Metaphors",                 "df":"Say one thing simply is another — no like or as needed.",   "minAge":9},
-    {"id":"adv", "em":"🏃","nm":"Adverbs",                  "df":"How something is done — use sparingly for extra punch!",     "minAge":9},
+    {"id":"adv", "em":"🏃","nm":"Adverbs",                  "df":"How something is done — use sparingly for extra punch!",     "minAge":5},
     {"id":"par", "em":"📐","nm":"Paragraphing with Purpose", "df":"Use paragraph breaks to control pace and drama.",            "minAge":9},
     {"id":"fla", "em":"⏪","nm":"Flashback / Memory",        "df":"Step back in time to reveal something important.",           "minAge":10},
     {"id":"rhe", "em":"❓","nm":"Rhetorical Questions",      "df":"Ask a question you don't answer — to make readers think.",  "minAge":10},
