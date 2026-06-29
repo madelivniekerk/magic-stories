@@ -1870,6 +1870,14 @@ def show_landing():
       --ink:#2c2417;--ink-soft:#6c6047;
       --page:#fbf6ea;--page-2:#f2e7cd;--page-edge:#e2cfa6;
     }
+    /* strip Streamlit's element wrappers of any background/border on the landing page */
+    [data-testid="stAppViewContainer"]{background:transparent!important;}
+    [data-testid="stAppViewBlockContainer"]{background:transparent!important;padding-top:0!important;}
+    [data-testid="stVerticalBlock"],[data-testid="stVerticalBlockBorderWrapper"],
+    [data-testid="column"],[data-testid="stHorizontalBlock"]{background:transparent!important;border:none!important;}
+    [data-testid="stImage"]{background:transparent!important;border:none!important;box-shadow:none!important;}
+    section[data-testid="stMain"]{background:transparent!important;}
+    .stMainBlockContainer{background:transparent!important;}
     /* star field */
     .lsky{position:fixed;inset:0;z-index:0;pointer-events:none;
       background:radial-gradient(150% 90% at 50% -10%,#243a60 0%,#14223c 34%,var(--bg2) 64%,var(--bg3) 100%);}
@@ -2015,15 +2023,26 @@ def show_landing():
       </nav>
     </div>""", unsafe_allow_html=True)
 
-    # Hero — book image
+    # Hero — book image (pure HTML to avoid Streamlit's pink image wrapper)
     book_path = os.path.join(BASE_DIR, "assets", "book-original.png")
+    book_b64 = ""
     if os.path.exists(book_path):
-        _, hero_col, _ = st.columns([1, 6, 1])
-        with hero_col:
-            st.image(book_path, use_container_width=True)
+        import base64 as _b64
+        with open(book_path, "rb") as _f:
+            book_b64 = _b64.b64encode(_f.read()).decode()
 
-    st.markdown("""
+    book_img_html = (
+        f'<img src="data:image/png;base64,{book_b64}" '
+        f'style="width:100%;height:auto;display:block;border-radius:16px;'
+        f'box-shadow:0 44px 74px -32px rgba(0,0,0,.72),0 12px 22px -14px rgba(0,0,0,.5);">'
+        if book_b64 else ""
+    )
+
+    st.markdown(f"""
     <div class="lhero lcon">
+      <div style="max-width:960px;margin:0 auto 22px;">
+        {book_img_html}
+      </div>
       <p class="lhero-line">Personalised adventures that put your child in charge — built to
         <b>spark imagination</b> and <b>hold wandering attention</b>,
         for curious kids and focus-finding minds alike.</p>
