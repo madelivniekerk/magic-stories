@@ -1282,7 +1282,6 @@ def render_step(step):
         with nb_l:
             if st.button("✏️  Let me improve it", key="nudge_improve", use_container_width=True):
                 st.session_state.pop("_nudge", None)
-                st.session_state["_nudge_shown"] = True
                 st.rerun()
         with nb_r:
             if st.button("Continue →", key="nudge_skip", use_container_width=True):
@@ -1326,7 +1325,8 @@ def render_step(step):
             next_clicked = st.button("Next →", key="nav_next", use_container_width=True, disabled=not ok)
             if next_clicked:
                 written = st.session_state.get(f"more_{sid}", "").strip()
-                if written and step.get("write_prompt") and not st.session_state.get("_nudge_shown"):
+                nudge_done_key = f"_nudge_done_{sid}"
+                if written and step.get("write_prompt") and not st.session_state.get(nudge_done_key):
                     client = get_client()
                     if client:
                         with st.spinner(""):
@@ -1338,9 +1338,9 @@ def render_step(step):
                             )
                         if nudge:
                             st.session_state["_nudge"] = {"text": nudge, "next_step": step["idx"] + 1}
+                            st.session_state[nudge_done_key] = True
                             st.rerun()
                 st.session_state.pop("_nudge", None)
-                st.session_state.pop("_nudge_shown", None)
                 st.session_state["wizard_step"] = step["idx"] + 1
                 st.session_state["_scroll_top"] = True
                 st.rerun()
