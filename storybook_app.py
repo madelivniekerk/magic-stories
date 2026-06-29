@@ -1021,33 +1021,64 @@ def generate_writing_tip(step_id, text, child_age, client):
         return None
 
 
+_NUDGE_WRITING_STEPS = ["who","villain","friend","where","when","what","why"]
+
+_DEVICE_NUDGE = {
+    "adj": ("adjective",
+        "Ask them to add ONE colour, size, or feeling word. "
+        "Example: '\"The dog ran\" → try \"The BIG brown dog ran\"'. Keep it simple."),
+    "adv": ("adverb",
+        "Ask them to add ONE adverb showing HOW something happens. "
+        "Example: '\"She ran\" → try \"She ran QUICKLY\"'."),
+    "sim": ("simile",
+        "Ask them to add a simile using 'as … as …' or 'like a …'. "
+        "Example: '\"The wind blew\" → try \"The wind blew like an angry giant\"'. "
+        "Use their actual words to show where it fits."),
+    "met": ("metaphor",
+        "Ask them to replace a noun with something unexpected — no 'like' or 'as'. "
+        "Example: '\"The stars shone\" → try \"The stars were diamonds across the sky\"'. "
+        "Use their actual words."),
+    "per": ("personification",
+        "Ask them to give a non-living thing a feeling or action. "
+        "Example: '\"The trees swayed\" → try \"The trees whispered secrets to each other\"'."),
+    "clf": ("cliffhanger ending",
+        "Ask them to end their sentence on a surprise or unanswered question that makes readers want more. "
+        "Example: '\"Then she opened the door\" → try \"Then she opened the door — and screamed.\"'."),
+    "vso": ("varied sentence opener",
+        "Ask them to start their next sentence differently — with a time word, place word, or -ing word. "
+        "Example: instead of 'He ran', try 'Suddenly, he ran' or 'Heart pounding, he ran'."),
+    "rhe": ("rhetorical question",
+        "Ask them to add a question they don't answer, to make the reader think. "
+        "Example: add 'But would it be enough?' or 'Could anything stop them now?'."),
+    "fla": ("flashback",
+        "Ask them to add one sentence stepping back in time to reveal something important. "
+        "Example: 'She remembered the last time she had seen those eyes…'."),
+    "for": ("foreshadowing hint",
+        "Ask them to drop a tiny clue about what might come later. "
+        "Example: add 'Little did they know, this was only the beginning.' or a mysterious detail."),
+    "par": ("paragraph break for effect",
+        "Ask them to split their writing at the most dramatic moment — a new paragraph creates a pause. "
+        "Show them where a break would add suspense."),
+}
+
+_LEVEL_FALLBACK = {
+    "Foundation":   "adj",
+    "Early Reader": "adv",
+    "Confident":    "sim",
+    "Advanced":     "met",
+}
+
+
 def generate_writing_nudge(step_id, text, level_lbl, level_age, client):
-    level_instructions = {
-        "Foundation": (
-            "adjective",
-            "Ask them to add ONE colour, size, or feeling word to describe something in their sentence. "
-            "Example format: '\"The dog ran\" → try \"The BIG brown dog ran\"'. Keep it very simple."
-        ),
-        "Early Reader": (
-            "adverb",
-            "Ask them to add ONE adverb that describes HOW something happens. "
-            "Example format: '\"She ran\" → try \"She ran QUICKLY\"'. Keep it simple and fun."
-        ),
-        "Confident": (
-            "simile",
-            "Ask them to add a simile using 'as ... as ...' or 'like a ...'. "
-            "Example format: '\"The wind blew\" → try \"The wind blew like a angry giant\"'. "
-            "Use their actual words to show where the simile fits."
-        ),
-        "Advanced": (
-            "simile or metaphor",
-            "Ask them to add a simile or metaphor. For a simile use 'like' or 'as ... as'. "
-            "For a metaphor replace a noun with something unexpected. "
-            "Example: '\"The stars shone\" → try \"The stars were diamonds scattered across the sky\"'. "
-            "Use their actual words."
-        ),
-    }
-    technique, instruction = level_instructions.get(level_lbl, level_instructions["Early Reader"])
+    # Pick technique: cycle through selected magic words across writing steps
+    wiz_words = [w for w in st.session_state.get("wiz_words", []) if w in _DEVICE_NUDGE]
+    if wiz_words:
+        step_index = _NUDGE_WRITING_STEPS.index(step_id) if step_id in _NUDGE_WRITING_STEPS else 0
+        device_id  = wiz_words[step_index % len(wiz_words)]
+    else:
+        device_id  = _LEVEL_FALLBACK.get(level_lbl, "adj")
+    technique, instruction = _DEVICE_NUDGE[device_id]
+
     step_labels = {
         "who": "the hero", "villain": "the villain", "friend": "the sidekick",
         "where": "the setting", "when": "the time", "what": "the quest", "why": "the motivation",
