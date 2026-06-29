@@ -1074,7 +1074,8 @@ def generate_writing_nudge(step_id, text, level_lbl, level_age, client):
     base_techniques = ["adj", "adv"]
 
     # Any other selected magic words cycle through one per step
-    wiz_words  = [w for w in st.session_state.get("wiz_words", []) if w in _DEVICE_NUDGE and w not in base_techniques]
+    all_words  = st.session_state.get("wiz_words") or []
+    wiz_words  = [w for w in all_words if w in _DEVICE_NUDGE and w not in base_techniques]
     step_index = _NUDGE_WRITING_STEPS.index(step_id) if step_id in _NUDGE_WRITING_STEPS else 0
     extra_id   = wiz_words[step_index % len(wiz_words)] if wiz_words else None
 
@@ -1109,11 +1110,12 @@ def generate_writing_nudge(step_id, text, level_lbl, level_age, client):
     )
     try:
         resp = client.messages.create(
-            model=MODEL, max_tokens=120,
+            model=MODEL, max_tokens=220,
             messages=[{"role": "user", "content": prompt}]
         )
-        return resp.content[0].text.strip()
-    except Exception:
+        return resp.content[0].text.strip() or None
+    except Exception as e:
+        st.session_state["_nudge_error"] = str(e)
         return None
 
 
@@ -1441,7 +1443,12 @@ def render_step(step):
     with nav_l:
         if step["idx"] > 0:
             if st.button("← Back", key="nav_back", use_container_width=True):
-                st.session_state["wizard_step"] = step["idx"] - 1
+                prev = step["idx"] - 1
+                st.session_state["wizard_step"] = prev
+                # Clear nudge flag for destination step so it can appear again after editing
+                prev_sid = STEPS[prev]["id"] if prev < len(STEPS) else ""
+                st.session_state.pop(f"_nudge_done_{prev_sid}", None)
+                st.session_state.pop("_nudge", None)
                 st.session_state["_scroll_top"] = True
                 st.rerun()
 
