@@ -1623,11 +1623,22 @@ def main():
 
     if st.session_state.pop("_scroll_top", False):
         components.html("""<script>
-            var el = window.parent.document.querySelector('[data-testid="stAppViewBlockContainer"]')
-                  || window.parent.document.querySelector('section.main')
-                  || window.parent.document.querySelector('.main');
-            if (el) el.scrollTop = 0;
-            window.parent.scrollTo(0, 0);
+            (function() {
+                var selectors = [
+                    '[data-testid="stAppViewBlockContainer"]',
+                    '[data-testid="block-container"]',
+                    'section.main',
+                    '.main',
+                    '.stMainBlockContainer'
+                ];
+                selectors.forEach(function(s) {
+                    var el = window.parent.document.querySelector(s);
+                    if (el) el.scrollTop = 0;
+                });
+                window.parent.scrollTo(0, 0);
+                window.parent.document.documentElement.scrollTop = 0;
+                window.parent.document.body.scrollTop = 0;
+            })();
         </script>""", height=0)
 
     if st.session_state.get("show_library"):
