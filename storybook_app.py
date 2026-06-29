@@ -1132,23 +1132,26 @@ def render_magic_words(child_age):
             with col:
                 is_on = dev["id"] in words_on
                 cls   = "dev-row on" if is_on else "dev-row"
-                st.markdown(
-                    f'<div class="{cls}">'
-                    f'<span class="d-em">{dev["em"]}</span>'
-                    f'<div class="d-body"><div class="d-nm">{dev["nm"]}</div>'
-                    f'<div class="d-df">{dev["df"]}</div></div>'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
-                label = "✓" if is_on else "+"
-                if st.button(label, key=f"dev_{dev['id']}"):
-                    lst = list(st.session_state.get("wiz_words", []))
-                    if dev["id"] in lst:
-                        lst.remove(dev["id"])
-                    else:
-                        lst.append(dev["id"])
-                    st.session_state["wiz_words"] = lst
-                    st.rerun()
+                btn_col, card_col = st.columns([1, 7])
+                with btn_col:
+                    label = "✓" if is_on else "+"
+                    if st.button(label, key=f"dev_{dev['id']}"):
+                        lst = list(st.session_state.get("wiz_words", []))
+                        if dev["id"] in lst:
+                            lst.remove(dev["id"])
+                        else:
+                            lst.append(dev["id"])
+                        st.session_state["wiz_words"] = lst
+                        st.rerun()
+                with card_col:
+                    st.markdown(
+                        f'<div class="{cls}">'
+                        f'<span class="d-em">{dev["em"]}</span>'
+                        f'<div class="d-body"><div class="d-nm">{dev["nm"]}</div>'
+                        f'<div class="d-df">{dev["df"]}</div></div>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
 
     if locked:
         # Find which level unlocks the next batch
