@@ -584,6 +584,26 @@ def get_openai_client():
     return OpenAI(api_key=key) if key else None
 
 
+def _extract_name(text):
+    """Pull a proper noun name from a user's character description, if present."""
+    if not text:
+        return None
+    patterns = [
+        r"(?:name\s+is|named?|called|they(?:'re| are)|he(?:'s| is)|she(?:'s| is))\s+([A-Z][a-z]{1,14})",
+        r"^([A-Z][a-z]{1,14})\s+is\b",
+        r"\bname\s*[:\-]\s*([A-Z][a-z]{1,14})",
+    ]
+    skip = {"My","The","A","An","Their","His","Her","They","He","She","This",
+            "Brave","Young","Old","Little","Big","Great","Dark","Magic"}
+    for pat in patterns:
+        m = re.search(pat, text)
+        if m:
+            name = m.group(1).strip()
+            if name not in skip:
+                return name
+    return None
+
+
 def generate_story(client, wiz):
     level_lbl = wiz.get("level_lbl", "Early Reader")
     level_age = wiz.get("level_age", 7)
@@ -597,6 +617,11 @@ def generate_story(client, wiz):
     words   = wiz.get("words",        [])
     touch   = wiz.get("touch",        "").strip()
     more    = wiz.get("more",         {})
+
+    # User-typed name takes priority over the card label
+    hero_name    = _extract_name(more.get("who",""))    or who
+    villain_name = _extract_name(more.get("villain","")) or villain or ""
+    friend_name  = _extract_name(more.get("friend",""))  or friend or ""
 
     age_rules = AGE_RULES.get(level_lbl, AGE_RULES["Early Reader"])
 
@@ -614,10 +639,12 @@ def generate_story(client, wiz):
             child_lines.append(f'- {label}: "{txt}"')
     child_text = ""
     if child_lines:
-        child_text = "\n\nThe child wrote these words — incorporate them verbatim or very closely:\n" + "\n".join(child_lines)
+        child_text = ("\n\nThe child wrote these words — incorporate them closely and "
+                      "use any name the child gave as the character's name throughout:\n"
+                      + "\n".join(child_lines))
 
-    villain_line = f"- Villain: {villain}" if villain else ""
-    friend_line  = f"- Sidekick: {friend}" if friend else ""
+    villain_line = f"- Villain: {villain_name} (character type: {villain})" if villain_name else ""
+    friend_line  = f"- Sidekick: {friend_name} (character type: {friend})" if friend_name else ""
 
     prompt = f"""You are a warm, imaginative children's story writer. Write a beautiful illustrated storybook.
 
@@ -625,7 +652,7 @@ Reading level: {level_lbl} (age {level_age}+)
 Language rules: {age_rules}{magic_text}
 
 Story:
-- Hero: {who}
+- Hero: {hero_name} (character type: {who})
 {villain_line}
 {friend_line}
 - Setting: {where}
@@ -641,11 +668,11 @@ Return ONLY valid JSON (no markdown):
 Rules:
 - Exactly 6 pages
 - Page 1: introduce hero and world at the given time
-- Pages 2–3: the adventure and a challenge{f'; the villain ({villain}) creates the obstacle' if villain else ''}
-- Pages 4–5: the hero overcomes it{f'; the sidekick ({friend}) helps at a key moment' if friend else ''}
+- Pages 2–3: the adventure and a challenge{f'; the villain ({villain_name}) creates the obstacle' if villain_name else ''}
+- Pages 4–5: the hero overcomes it{f'; the sidekick ({friend_name}) helps at a key moment' if friend_name else ''}
 - Page 6: happy ending and lesson learned
 - Keep it positive, fun, and strictly age-appropriate
-- Use the hero's name throughout{f'; give the villain a memorable scene' if villain else ''}{f'; give the sidekick a moment to shine' if friend else ''}"""
+- IMPORTANT: Always call the hero "{hero_name}" throughout the story{f'; always call the villain "{villain_name}"' if villain_name else ''}{f'; always call the sidekick "{friend_name}"' if friend_name else ''}"""
 
     resp = client.messages.create(
         model=MODEL, max_tokens=2000,
@@ -687,11 +714,15 @@ def generate_character_description(wiz, client):
     villain_extra = (more.get("villain", "") or "").strip()
     friend_extra  = (more.get("friend", "") or "").strip()
 
-    parts = [f"Hero: {hero}" + (f" — {hero_extra}" if hero_extra else "")]
+    hero_name    = _extract_name(hero_extra)    or hero
+    villain_name = _extract_name(villain_extra) or villain
+    friend_name  = _extract_name(friend_extra)  or friend
+
+    parts = [f"Hero ({hero_name}, type: {hero})" + (f" — {hero_extra}" if hero_extra else "")]
     if villain:
-        parts.append(f"Villain: {villain}" + (f" — {villain_extra}" if villain_extra else ""))
+        parts.append(f"Villain ({villain_name}, type: {villain})" + (f" — {villain_extra}" if villain_extra else ""))
     if friend:
-        parts.append(f"Sidekick: {friend}" + (f" — {friend_extra}" if friend_extra else ""))
+        parts.append(f"Sidekick ({friend_name}, type: {friend})" + (f" — {friend_extra}" if friend_extra else ""))
 
     resp = client.messages.create(
         model=MODEL, max_tokens=300,
