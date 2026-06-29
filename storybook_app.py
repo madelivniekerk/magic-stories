@@ -186,6 +186,9 @@ a{color:var(--purple-lt) !important;}
 }
 .stButton>button:hover{transform:translateY(-2px) !important; box-shadow:0 14px 28px -10px rgba(123,47,168,.9) !important;}
 .stButton>button:disabled{opacity:.35 !important; transform:none !important;}
+.stButton>button:focus,.stButton>button:focus-visible,
+[data-testid="stDownloadButton"]>button:focus,[data-testid="stDownloadButton"]>button:focus-visible{
+  outline:none !important; box-shadow:none !important; border-color:rgba(123,47,168,.4) !important;}
 .stTextArea textarea, .stTextInput input{
   border-radius:12px !important; border:1.5px solid var(--panel-line) !important;
   background:rgba(8,4,18,.7) !important; color:var(--cream) !important;
