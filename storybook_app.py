@@ -1,6 +1,6 @@
 """
 Story Magic ✨ — AI-powered storybook creator for kids aged 5–12
-Redesigned to match Magic Stories design handoff (June 2026)
+Redesigned to match My Magic Story design handoff (June 2026)
 """
 
 import streamlit as st
@@ -22,7 +22,7 @@ STORIES_DIR  = os.path.join(BASE_DIR, "stories")
 TRACKER_PATH = os.path.join(BASE_DIR, "storybook_tracker.xlsx")
 os.makedirs(STORIES_DIR, exist_ok=True)
 
-st.set_page_config(page_title="Magic Stories ✨", page_icon="📖", layout="wide")
+st.set_page_config(page_title="My Magic Story ✨", page_icon="📖", layout="wide")
 
 # ── CSS (ported from magic-app.css design handoff) ───────────────────────────
 st.markdown("""<style>
@@ -726,7 +726,7 @@ def generate_story_pdf(story, images, story_id=None):
     c.setFillColorRGB(.63,.50,.80); c.setFont("Helvetica-Oblique",16)
     c.drawCentredString(PW/2,PH/2-50,"A Story Just For You")
     c.setFont("Helvetica",11); c.setFillColorRGB(.45,.32,.60)
-    c.drawCentredString(PW/2,PH/2-74,"Written with Magic Stories")
+    c.drawCentredString(PW/2,PH/2-74,"Written with My Magic Story")
     c.showPage()
     for i, page in enumerate(pages):
         img_src = images[i] if i<len(images) else None
@@ -1380,7 +1380,7 @@ def show_storybook():
                    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">{title}</div>
               <div style="width:60%;height:1px;background:linear-gradient(90deg,transparent,#d4af37,transparent);margin:0 auto 1rem;"></div>
               <div style="font-family:'Cinzel',serif;font-size:.7rem;color:#9a7ab0;letter-spacing:.22em;text-transform:uppercase;margin-bottom:.4rem;">A Story Just For You</div>
-              <div style="font-family:'Cinzel',serif;font-size:.62rem;color:#6a507a;letter-spacing:.18em;text-transform:uppercase;">Written with Magic Stories</div>
+              <div style="font-family:'Cinzel',serif;font-size:.62rem;color:#6a507a;letter-spacing:.18em;text-transform:uppercase;">Written with My Magic Story</div>
               <div class="twinkle-3" style="font-size:1.1rem;color:#d4af37;letter-spacing:.8rem;margin-top:1.2rem;">✧ ✦ ✧</div>
             </div>
           </div>
@@ -1609,7 +1609,7 @@ def main():
         st.markdown("""
         <div class="ms-brand">
           <span class="spark">✦</span>
-          <span class="name">Magic Stories</span>
+          <span class="name">My Magic Story</span>
         </div>""", unsafe_allow_html=True)
     with acol2:
         lib_label = "← Builder" if st.session_state.get("show_library") else "📚 Story Library"
