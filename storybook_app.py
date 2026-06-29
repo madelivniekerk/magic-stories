@@ -5,7 +5,7 @@ Redesigned to match My Magic Story design handoff (June 2026)
 
 import streamlit as st
 import streamlit.components.v1 as components
-import os, json, re, io, textwrap, requests
+import os, json, re, io, textwrap, requests, random
 from datetime import datetime
 from dotenv import load_dotenv
 from anthropic import Anthropic
@@ -1353,9 +1353,13 @@ def render_step(step):
 
     elif sid in ("who","villain","friend","where","when","what","why"):
         options_map = {
-            "who":WHO_OPTIONS,"villain":VILLAIN_OPTIONS,"friend":FRIEND_OPTIONS,
-            "where":WHERE_OPTIONS,"when":WHEN_OPTIONS,
-            "what":WHAT_OPTIONS,"why":WHY_OPTIONS,
+            "who":     st.session_state.get("_who_opts",     WHO_OPTIONS),
+            "villain": st.session_state.get("_villain_opts", VILLAIN_OPTIONS),
+            "friend":  st.session_state.get("_friend_opts",  FRIEND_OPTIONS),
+            "where":   st.session_state.get("_where_opts",   WHERE_OPTIONS),
+            "when":    st.session_state.get("_when_opts",    WHEN_OPTIONS),
+            "what":    st.session_state.get("_what_opts",    WHAT_OPTIONS),
+            "why":     st.session_state.get("_why_opts",     WHY_OPTIONS),
         }
         own_ph_map = {
             "who":"e.g. a kind robot who loves to bake",
@@ -1843,6 +1847,17 @@ def main():
     if not client:
         st.error("⚠️ ANTHROPIC_API_KEY not found. Add it to your .env file.")
         return
+
+    # Shuffle character options once per session so each page load feels fresh
+    if "_options_shuffled" not in st.session_state:
+        for _key, _pool in [("_who_opts", WHO_OPTIONS), ("_villain_opts", VILLAIN_OPTIONS),
+                             ("_friend_opts", FRIEND_OPTIONS), ("_where_opts", WHERE_OPTIONS),
+                             ("_when_opts", WHEN_OPTIONS), ("_what_opts", WHAT_OPTIONS),
+                             ("_why_opts", WHY_OPTIONS)]:
+            _copy = list(_pool)
+            random.shuffle(_copy)
+            st.session_state[_key] = _copy
+        st.session_state["_options_shuffled"] = True
 
     # App bar
     st.markdown('<div id="page-top"></div>', unsafe_allow_html=True)
