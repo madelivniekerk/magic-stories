@@ -1140,17 +1140,15 @@ def render_magic_words(child_age):
                     f'</div>',
                     unsafe_allow_html=True
                 )
-                label = f"{'✓ Remove' if is_on else '+ Add'} {dev['nm']}"
-                btn_col, _ = st.columns([1, 1])
-                with btn_col:
-                    if st.button(label, key=f"dev_{dev['id']}", use_container_width=True):
-                        lst = list(st.session_state.get("wiz_words", []))
-                        if dev["id"] in lst:
-                            lst.remove(dev["id"])
-                        else:
-                            lst.append(dev["id"])
-                        st.session_state["wiz_words"] = lst
-                        st.rerun()
+                label = "✓" if is_on else "+"
+                if st.button(label, key=f"dev_{dev['id']}"):
+                    lst = list(st.session_state.get("wiz_words", []))
+                    if dev["id"] in lst:
+                        lst.remove(dev["id"])
+                    else:
+                        lst.append(dev["id"])
+                    st.session_state["wiz_words"] = lst
+                    st.rerun()
 
     if locked:
         # Find which level unlocks the next batch
