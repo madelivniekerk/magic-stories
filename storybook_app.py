@@ -865,27 +865,25 @@ def render_card_grid(options, state_key, accent, cols=10, show_sub=False):
 
             large = cols <= 4
 
+            card_h = ("200px" if large else "88px")
+
             if is_sel:
                 border   = f"2px solid {accent}"
                 bg       = f"linear-gradient(180deg,rgba(138,63,191,.45),rgba(94,31,142,.35))"
                 glow     = f"0 0 0 3px {accent}55, 0 4px 24px {accent}33"
                 opacity  = "1"
-                min_h    = "200px" if large else "140px"
-                em_size  = "80px"  if large else "64px"
-                lbl_fs   = "18px"  if large else "13px"
-                sub_fs   = "15px"  if large else "12px"
-                padding  = "28px 10px 24px" if large else "18px 5px 16px"
+                em_size  = "80px"  if large else "44px"
+                lbl_fs   = "18px"  if large else "11px"
+                sub_fs   = "15px"  if large else "11px"
                 lbl_html = f'<span style="font-family:Cinzel,serif;font-weight:400;font-size:{lbl_fs};color:#f0dfc0;letter-spacing:.06em;line-height:1.2;">{opt["lbl"]}</span>'
-                check    = f'<span style="position:absolute;top:6px;right:8px;font-size:15px;font-weight:800;color:{accent};">✓</span>'
+                check    = f'<span style="position:absolute;top:4px;right:6px;font-size:13px;font-weight:800;color:{accent};">✓</span>'
                 sub_html = f'<span style="font-size:{sub_fs};color:#bda88a;font-weight:600;line-height:1.1;">{opt.get("sub","")}</span>' if show_sub and opt.get("sub") else ""
             elif any_sel:
                 border   = "1px solid rgba(176,111,216,0.12)"
                 bg       = "rgba(10,6,24,.35)"
                 glow     = "none"
                 opacity  = "0.38"
-                min_h    = "80px"  if large else "52px"
-                em_size  = "36px"  if large else "26px"
-                padding  = "14px 4px 10px" if large else "7px 2px 5px"
+                em_size  = "36px"  if large else "28px"
                 lbl_html = ""
                 check    = ""
                 sub_html = ""
@@ -894,11 +892,9 @@ def render_card_grid(options, state_key, accent, cols=10, show_sub=False):
                 bg       = "rgba(10,6,24,.6)"
                 glow     = "none"
                 opacity  = "1"
-                min_h    = "170px" if large else "88px"
-                em_size  = "72px"  if large else "44px"
-                lbl_fs   = "17px"  if large else "13px"
-                sub_fs   = "14px"  if large else "12px"
-                padding  = "24px 10px 20px" if large else "12px 3px 10px"
+                em_size  = "72px"  if large else "38px"
+                lbl_fs   = "17px"  if large else "11px"
+                sub_fs   = "14px"  if large else "11px"
                 lbl_html = f'<span style="font-family:Cinzel,serif;font-weight:400;font-size:{lbl_fs};color:#e8d5b0;letter-spacing:.06em;line-height:1.2;">{opt["lbl"]}</span>'
                 check    = ""
                 sub_html = f'<span style="font-size:{sub_fs};color:#bda88a;font-weight:600;line-height:1.1;">{opt.get("sub","")}</span>' if show_sub and opt.get("sub") else ""
@@ -906,10 +902,10 @@ def render_card_grid(options, state_key, accent, cols=10, show_sub=False):
             col.markdown(
                 f'<div style="position:relative;z-index:1;display:flex;flex-direction:column;'
                 f'align-items:center;justify-content:center;gap:3px;text-align:center;'
-                f'padding:{padding};border-radius:11px;background:{bg};border:{border};'
-                f'box-shadow:{glow};min-height:{min_h};opacity:{opacity};">'
+                f'padding:6px 4px;border-radius:11px;background:{bg};border:{border};'
+                f'box-shadow:{glow};height:{card_h};overflow:hidden;opacity:{opacity};">'
                 f'{check}'
-                f'<span style="font-size:{em_size};line-height:1;">{opt["em"]}</span>'
+                f'<span style="font-size:{em_size};line-height:1;flex-shrink:0;">{opt["em"]}</span>'
                 f'{lbl_html}{sub_html}</div>',
                 unsafe_allow_html=True
             )
