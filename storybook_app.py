@@ -1077,26 +1077,30 @@ def render_magic_words(child_age):
     available = [d for d in DEVICE_OPTIONS if d["minAge"] <= child_age]
     locked    = [d for d in DEVICE_OPTIONS if d["minAge"] > child_age]
 
-    for dev in available:
-        is_on = dev["id"] in words_on
-        cls   = "dev-row on" if is_on else "dev-row"
-        st.markdown(
-            f'<div class="{cls}">'
-            f'<span class="d-em">{dev["em"]}</span>'
-            f'<div class="d-body"><div class="d-nm">{dev["nm"]}</div>'
-            f'<div class="d-df">{dev["df"]}</div></div>'
-            f'</div>',
-            unsafe_allow_html=True
-        )
-        label = f"{'✓ Remove' if is_on else '+ Add'} {dev['nm']}"
-        if st.button(label, key=f"dev_{dev['id']}"):
-            lst = list(st.session_state.get("wiz_words", []))
-            if dev["id"] in lst:
-                lst.remove(dev["id"])
-            else:
-                lst.append(dev["id"])
-            st.session_state["wiz_words"] = lst
-            st.rerun()
+    for i in range(0, len(available), 2):
+        pair = available[i:i+2]
+        cols = st.columns(len(pair))
+        for col, dev in zip(cols, pair):
+            with col:
+                is_on = dev["id"] in words_on
+                cls   = "dev-row on" if is_on else "dev-row"
+                st.markdown(
+                    f'<div class="{cls}">'
+                    f'<span class="d-em">{dev["em"]}</span>'
+                    f'<div class="d-body"><div class="d-nm">{dev["nm"]}</div>'
+                    f'<div class="d-df">{dev["df"]}</div></div>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+                label = f"{'✓ Remove' if is_on else '+ Add'} {dev['nm']}"
+                if st.button(label, key=f"dev_{dev['id']}"):
+                    lst = list(st.session_state.get("wiz_words", []))
+                    if dev["id"] in lst:
+                        lst.remove(dev["id"])
+                    else:
+                        lst.append(dev["id"])
+                    st.session_state["wiz_words"] = lst
+                    st.rerun()
 
     if locked:
         # Find which level unlocks the next batch
