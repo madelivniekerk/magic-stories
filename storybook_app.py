@@ -1141,7 +1141,7 @@ def render_magic_words(child_age):
                     unsafe_allow_html=True
                 )
                 label = f"{'✓ Remove' if is_on else '+ Add'} {dev['nm']}"
-                if st.button(label, key=f"dev_{dev['id']}"):
+                if st.button(label, key=f"dev_{dev['id']}", use_container_width=True):
                     lst = list(st.session_state.get("wiz_words", []))
                     if dev["id"] in lst:
                         lst.remove(dev["id"])
