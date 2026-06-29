@@ -1524,32 +1524,71 @@ def show_storybook():
           <div style="font-family:'Cinzel',serif;font-size:.62rem;color:#9a7ab0;letter-spacing:.2em;text-transform:uppercase;margin-top:1rem;opacity:.8;">Chapter {page_i+1}</div>
         </div>"""
 
-    st.markdown(f"""
-    <div class="book-outer">
-      <div class="book-stack-2"></div><div class="book-stack-1"></div>
-      <div class="book-spread">
-        <div class="book-left">{left_html}</div>
-        <div class="book-spine"></div>
-        <div class="book-right" style="position:relative;">
-          <span class="book-corner" style="top:10px;left:10px;">✦</span>
-          <span class="book-corner" style="top:10px;right:10px;">✦</span>
-          <span class="book-corner" style="bottom:10px;left:10px;">✦</span>
-          <span class="book-corner" style="bottom:10px;right:10px;">✦</span>
-          <div class="book-running-head">{title}</div>
-          <div class="book-story-text">{text_html}</div>
-          <div class="book-footer"><span class="book-page-num">✦ &nbsp; {page_i+1} &nbsp; ✦</span></div>
-        </div>
-      </div>
-    </div>""", unsafe_allow_html=True)
+    book_col, detail_col = st.columns([4, 1])
 
-    # Edit page text
-    with st.expander("✏️  Edit this page"):
-        edited = st.text_area("Edit text", value=text, height=280, key=f"edit_{page_i}", label_visibility="collapsed")
-        if st.button("💾  Save changes", key=f"save_{page_i}"):
-            st.session_state["story_data"]["pages"][page_i]["text"] = edited
-            st.rerun()
+    with book_col:
+        st.markdown(f"""
+        <div class="book-outer">
+          <div class="book-stack-2"></div><div class="book-stack-1"></div>
+          <div class="book-spread">
+            <div class="book-left">{left_html}</div>
+            <div class="book-spine"></div>
+            <div class="book-right" style="position:relative;">
+              <span class="book-corner" style="top:10px;left:10px;">✦</span>
+              <span class="book-corner" style="top:10px;right:10px;">✦</span>
+              <span class="book-corner" style="bottom:10px;left:10px;">✦</span>
+              <span class="book-corner" style="bottom:10px;right:10px;">✦</span>
+              <div class="book-running-head">{title}</div>
+              <div class="book-story-text">{text_html}</div>
+              <div class="book-footer"><span class="book-page-num">✦ &nbsp; {page_i+1} &nbsp; ✦</span></div>
+            </div>
+          </div>
+        </div>""", unsafe_allow_html=True)
 
-    # Page navigation (columns wider than 320px so container query doesn't hide these buttons)
+        # Edit page text
+        with st.expander("✏️  Edit this page"):
+            edited = st.text_area("Edit text", value=text, height=280, key=f"edit_{page_i}", label_visibility="collapsed")
+            if st.button("💾  Save changes", key=f"save_{page_i}"):
+                st.session_state["story_data"]["pages"][page_i]["text"] = edited
+                st.rerun()
+
+    with detail_col:
+        wiz_who     = (st.session_state.get("wiz_who") or {}).get("val","")
+        wiz_villain = (st.session_state.get("wiz_villain") or {}).get("val","")
+        wiz_friend  = (st.session_state.get("wiz_friend") or {}).get("val","")
+        wiz_where   = (st.session_state.get("wiz_where") or {}).get("val","")
+        wiz_when    = (st.session_state.get("wiz_when") or {}).get("val","")
+        wiz_words   = st.session_state.get("wiz_words", [])
+        word_names  = [DEVICE_NAMES.get(w,"").split(" ")[0] for w in wiz_words if w in DEVICE_NAMES]
+
+        def chip(label, value, colour="#d4af37"):
+            if not value:
+                return ""
+            return (
+                f'<div style="margin-bottom:8px;padding:6px 10px;border-radius:10px;'
+                f'background:rgba(20,5,45,.7);border:1px solid rgba(212,175,55,.2);">'
+                f'<span style="font-family:Cinzel,serif;font-size:.58rem;color:{colour};'
+                f'letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:2px;">{label}</span>'
+                f'<span style="font-family:Spectral,serif;font-size:.78rem;color:#d4c5e8;line-height:1.3;">{value}</span>'
+                f'</div>'
+            )
+
+        chips = (
+            f'<div style="font-family:Cinzel,serif;font-size:.62rem;color:#9a7ab0;'
+            f'letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;">Cast &amp; World</div>'
+            + chip("Hero", wiz_who, "#d4af37")
+            + chip("Villain", wiz_villain, "#c084fc")
+            + chip("Sidekick", wiz_friend, "#86efac")
+            + chip("Where", wiz_where, "#93c5fd")
+            + chip("When", wiz_when, "#fda4af")
+            + chip("Magic words", ", ".join(word_names) if word_names else "", "#f9a8d4")
+        )
+        st.markdown(
+            f'<div style="padding-top:8px;">{chips}</div>',
+            unsafe_allow_html=True
+        )
+
+    # Page navigation
     nl, nm, nr = st.columns([2, 3, 2])
     with nl:
         lbl = "◀  Cover" if page_i == 0 else "◀  Previous"
