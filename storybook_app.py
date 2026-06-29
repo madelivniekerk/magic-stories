@@ -1125,8 +1125,8 @@ def render_magic_words(child_age):
     available = [d for d in DEVICE_OPTIONS if d["minAge"] <= child_age]
     locked    = [d for d in DEVICE_OPTIONS if d["minAge"] > child_age]
 
-    for i in range(0, len(available), 2):
-        pair = available[i:i+2]
+    for i in range(0, len(available), 3):
+        pair = available[i:i+3]
         cols = st.columns(len(pair))
         for col, dev in zip(cols, pair):
             with col:
