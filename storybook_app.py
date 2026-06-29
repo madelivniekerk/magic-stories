@@ -189,6 +189,23 @@ a{color:var(--purple-lt) !important;}
 .stButton>button:focus,.stButton>button:focus-visible,
 [data-testid="stDownloadButton"]>button:focus,[data-testid="stDownloadButton"]>button:focus-visible{
   outline:none !important; box-shadow:none !important; border-color:rgba(123,47,168,.4) !important;}
+/* ── Writing nudge bubble ── */
+.nudge-bubble{
+  position:relative; background:rgba(30,8,69,.92);
+  border:1.5px solid rgba(192,132,252,.45); border-radius:18px;
+  padding:16px 20px 14px; margin:14px 0 10px;
+  box-shadow:0 8px 32px rgba(123,47,168,.3);
+  animation:fadeInUp .35s ease;
+}
+.nudge-bubble::after{
+  content:''; position:absolute; bottom:-12px; left:50%;
+  transform:translateX(-50%);
+  border:6px solid transparent; border-top-color:rgba(192,132,252,.45);
+}
+.nudge-icon{font-size:1.6rem; margin-right:10px; vertical-align:middle;}
+.nudge-text{font-family:'Spectral',serif; font-style:italic; font-size:1rem;
+  color:#e8d5f0; line-height:1.6; display:inline;}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .stTextArea textarea, .stTextInput input{
   border-radius:12px !important; border:1.5px solid var(--panel-line) !important;
   background:rgba(8,4,18,.7) !important; color:var(--cream) !important;
@@ -978,6 +995,38 @@ def generate_writing_tip(step_id, text, child_age, client):
         return None
 
 
+def generate_writing_nudge(step_id, text, level_lbl, level_age, client):
+    level_techniques = {
+        "Foundation":    "a describing word (adjective) like a colour, size, or feeling word",
+        "Early Reader":  "an adjective or adverb — a word that describes the character or how something happens",
+        "Confident":     "an adverb, a simile (e.g. 'as fast as lightning'), or a vivid describing phrase",
+        "Advanced":      "a simile, metaphor, personification, or powerful adverb",
+    }
+    technique = level_techniques.get(level_lbl, "a describing word or adverb")
+    step_labels = {
+        "who": "the hero", "villain": "the villain", "friend": "the sidekick",
+        "where": "the setting", "when": "the time", "what": "the quest", "why": "the motivation",
+    }
+    about = step_labels.get(step_id, "their writing")
+    prompt = (
+        f"A {level_age}-year-old ({level_lbl} reading level) wrote this about {about} in their storybook:\n"
+        f"\"{text.strip()}\"\n\n"
+        f"Give ONE short, warm nudge suggesting they add {technique}. "
+        f"Use their actual words in the suggestion to make it feel personal. "
+        f"Show a concrete example using their text. Keep it to 1-2 sentences. "
+        f"Do NOT start with praise words like 'Great!' or 'Wonderful!'. "
+        f"Return ONLY the nudge, nothing else."
+    )
+    try:
+        resp = client.messages.create(
+            model=MODEL, max_tokens=100,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return resp.content[0].text.strip()
+    except Exception:
+        return None
+
+
 def render_magic_words(child_age):
     words_on = st.session_state.get("wiz_words", [])
 
@@ -1219,6 +1268,31 @@ def render_step(step):
 
     st.markdown("</div>", unsafe_allow_html=True)  # close step-panel
 
+    # Writing nudge bubble
+    nudge = st.session_state.get("_nudge")
+    if nudge:
+        st.markdown(
+            f'<div class="nudge-bubble">'
+            f'<span class="nudge-icon">💭</span>'
+            f'<span class="nudge-text">{nudge["text"]}</span>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+        nb_l, nb_r = st.columns(2)
+        with nb_l:
+            if st.button("✏️  Let me improve it", key="nudge_improve", use_container_width=True):
+                st.session_state.pop("_nudge", None)
+                st.session_state["_nudge_shown"] = True
+                st.rerun()
+        with nb_r:
+            if st.button("Continue →", key="nudge_skip", use_container_width=True):
+                next_step = nudge["next_step"]
+                st.session_state.pop("_nudge", None)
+                st.session_state.pop("_nudge_shown", None)
+                st.session_state["wizard_step"] = next_step
+                st.session_state["_scroll_top"] = True
+                st.rerun()
+
     # Navigation
     st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
     nav_l, nav_mid, nav_r = st.columns([1, 2, 1])
@@ -1251,6 +1325,22 @@ def render_step(step):
                 )
             next_clicked = st.button("Next →", key="nav_next", use_container_width=True, disabled=not ok)
             if next_clicked:
+                written = st.session_state.get(f"more_{sid}", "").strip()
+                if written and step.get("write_prompt") and not st.session_state.get("_nudge_shown"):
+                    client = get_client()
+                    if client:
+                        with st.spinner(""):
+                            nudge = generate_writing_nudge(
+                                sid, written,
+                                st.session_state.get("wiz_level", {}).get("label", "Early Reader") if st.session_state.get("wiz_level") else "Early Reader",
+                                st.session_state.get("wiz_level_age", 7),
+                                client
+                            )
+                        if nudge:
+                            st.session_state["_nudge"] = {"text": nudge, "next_step": step["idx"] + 1}
+                            st.rerun()
+                st.session_state.pop("_nudge", None)
+                st.session_state.pop("_nudge_shown", None)
                 st.session_state["wizard_step"] = step["idx"] + 1
                 st.session_state["_scroll_top"] = True
                 st.rerun()
