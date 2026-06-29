@@ -996,30 +996,48 @@ def generate_writing_tip(step_id, text, child_age, client):
 
 
 def generate_writing_nudge(step_id, text, level_lbl, level_age, client):
-    level_techniques = {
-        "Foundation":    "a describing word (adjective) like a colour, size, or feeling word",
-        "Early Reader":  "an adjective or adverb — a word that describes the character or how something happens",
-        "Confident":     "an adverb, a simile (e.g. 'as fast as lightning'), or a vivid describing phrase",
-        "Advanced":      "a simile, metaphor, personification, or powerful adverb",
+    level_instructions = {
+        "Foundation": (
+            "adjective",
+            "Ask them to add ONE colour, size, or feeling word to describe something in their sentence. "
+            "Example format: '\"The dog ran\" → try \"The BIG brown dog ran\"'. Keep it very simple."
+        ),
+        "Early Reader": (
+            "adverb",
+            "Ask them to add ONE adverb that describes HOW something happens. "
+            "Example format: '\"She ran\" → try \"She ran QUICKLY\"'. Keep it simple and fun."
+        ),
+        "Confident": (
+            "simile",
+            "Ask them to add a simile using 'as ... as ...' or 'like a ...'. "
+            "Example format: '\"The wind blew\" → try \"The wind blew like a angry giant\"'. "
+            "Use their actual words to show where the simile fits."
+        ),
+        "Advanced": (
+            "simile or metaphor",
+            "Ask them to add a simile or metaphor. For a simile use 'like' or 'as ... as'. "
+            "For a metaphor replace a noun with something unexpected. "
+            "Example: '\"The stars shone\" → try \"The stars were diamonds scattered across the sky\"'. "
+            "Use their actual words."
+        ),
     }
-    technique = level_techniques.get(level_lbl, "a describing word or adverb")
+    technique, instruction = level_instructions.get(level_lbl, level_instructions["Early Reader"])
     step_labels = {
         "who": "the hero", "villain": "the villain", "friend": "the sidekick",
         "where": "the setting", "when": "the time", "what": "the quest", "why": "the motivation",
     }
     about = step_labels.get(step_id, "their writing")
     prompt = (
-        f"A {level_age}-year-old ({level_lbl} reading level) wrote this about {about} in their storybook:\n"
+        f"A {level_age}-year-old ({level_lbl} reading level) wrote this about {about}:\n"
         f"\"{text.strip()}\"\n\n"
-        f"Give ONE short, warm nudge suggesting they add {technique}. "
-        f"Use their actual words in the suggestion to make it feel personal. "
-        f"Show a concrete example using their text. Keep it to 1-2 sentences. "
-        f"Do NOT start with praise words like 'Great!' or 'Wonderful!'. "
+        f"You MUST suggest they add a {technique}. {instruction}\n"
+        f"Write 1-2 warm, encouraging sentences. Use their exact words in your example. "
+        f"Do NOT start with 'Great!', 'Wonderful!' or any filler praise. "
         f"Return ONLY the nudge, nothing else."
     )
     try:
         resp = client.messages.create(
-            model=MODEL, max_tokens=100,
+            model=MODEL, max_tokens=120,
             messages=[{"role": "user", "content": prompt}]
         )
         return resp.content[0].text.strip()
