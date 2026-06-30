@@ -1878,6 +1878,35 @@ def show_landing():
     [data-testid="stImage"]{background:transparent!important;border:none!important;box-shadow:none!important;}
     section[data-testid="stMain"]{background:transparent!important;}
     .stMainBlockContainer{background:transparent!important;}
+    /* hero book with text overlay */
+    .lbook-hero-wrap{position:relative;max-width:900px;margin:0 auto;
+      filter:drop-shadow(0 40px 70px rgba(0,0,0,.55));}
+    .lbook-hero-wrap img{width:100%;height:auto;display:block;}
+    .lbook-text-overlay{position:absolute;top:50%;right:3%;transform:translateY(-50%);
+      width:44%;padding:0 12px 0 0;text-align:left;}
+    .lhero-once{font-family:'Spectral',serif;font-style:italic;
+      font-size:clamp(11px,1.2vw,15px);color:#7a6040;margin:0 0 8px;letter-spacing:.04em;}
+    .lhero-h1{font-family:'Cinzel Decorative',serif;font-weight:700;
+      font-size:clamp(15px,2.1vw,29px);line-height:1.18;color:#2c2417;margin:0 0 4px;}
+    .lhero-h1 em{font-style:italic;font-family:'Spectral',serif;font-weight:600;
+      color:#7b2fa8;display:block;font-size:1.1em;}
+    .lhero-book-sub{font-family:'Spectral',serif;font-size:clamp(10px,1.05vw,13px);
+      line-height:1.55;color:#4a3a28;margin:10px 0 0;}
+    /* nav button pill (visual) */
+    .lnav-pill{font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);
+      border:1.5px solid rgba(216,178,87,.45);border-radius:999px;padding:8px 22px;
+      background:rgba(216,178,87,.08);letter-spacing:.04em;}
+    /* sub-hero trust row */
+    .lsub-hero{text-align:center;padding:20px 0 8px;position:relative;z-index:1;}
+    /* mobile: stack text below image */
+    @media(max-width:600px){
+      .lbook-text-overlay{position:static;transform:none;width:100%;
+        padding:14px 6px 0;text-align:center;}
+      .lhero-h1{color:var(--cream-text);}
+      .lhero-h1 em{color:var(--gold-lt);}
+      .lhero-book-sub{color:var(--cream-soft);}
+      .lhero-once{color:var(--cream-soft);}
+    }
     /* star field */
     .lsky{position:fixed;inset:0;z-index:0;pointer-events:none;
       background:radial-gradient(150% 90% at 50% -10%,#243a60 0%,#14223c 34%,var(--bg2) 64%,var(--bg3) 100%);}
@@ -2015,37 +2044,40 @@ def show_landing():
       <div class="lstars2"></div>
     </div>""", unsafe_allow_html=True)
 
+    # encode book-hero image
+    import base64 as _b64
+    book_hero_path = os.path.join(BASE_DIR, "assets", "book-hero.png")
+    book_b64 = ""
+    if os.path.exists(book_hero_path):
+        with open(book_hero_path, "rb") as _f:
+            book_b64 = _b64.b64encode(_f.read()).decode()
+    book_img_tag = (f'<img src="data:image/png;base64,{book_b64}" '
+                    f'style="width:100%;height:auto;display:block;">'
+                    if book_b64 else "")
+
     # Nav
-    st.markdown("""
+    st.markdown(f"""
     <div class="lcon">
       <nav class="lnav">
-        <div class="llogo"><span class="lspark">✦</span><span class="lname">My Magic Story</span></div>
+        <div class="llogo"><span class="lspark">✦</span><span class="lname">Story Magic</span></div>
+        <span class="lnav-pill">Start for free →</span>
       </nav>
     </div>""", unsafe_allow_html=True)
 
-    # Hero — book image (pure HTML to avoid Streamlit's pink image wrapper)
-    book_path = os.path.join(BASE_DIR, "assets", "book-original.png")
-    book_b64 = ""
-    if os.path.exists(book_path):
-        import base64 as _b64
-        with open(book_path, "rb") as _f:
-            book_b64 = _b64.b64encode(_f.read()).decode()
-
-    book_img_html = (
-        f'<img src="data:image/png;base64,{book_b64}" '
-        f'style="width:100%;height:auto;display:block;border-radius:16px;'
-        f'box-shadow:0 44px 74px -32px rgba(0,0,0,.72),0 12px 22px -14px rgba(0,0,0,.5);">'
-        if book_b64 else ""
-    )
-
+    # Hero — book with text overlaid on the right (blank) page
     st.markdown(f"""
-    <div class="lhero lcon">
-      <div style="max-width:960px;margin:0 auto 22px;">
-        {book_img_html}
+    <div class="lcon" style="padding:0 0 24px;position:relative;z-index:1;">
+      <div class="lbook-hero-wrap">
+        {book_img_tag}
+        <div class="lbook-text-overlay">
+          <p class="lhero-once">Once upon a time…</p>
+          <h1 class="lhero-h1">Every child deserves
+            <em>their own story.</em>
+          </h1>
+          <p class="lhero-book-sub">Pick a hero. Choose a world. Add a magic touch.<br>
+            In seconds, Story Magic writes and illustrates a storybook — just for your child.</p>
+        </div>
       </div>
-      <p class="lhero-line">Personalised adventures that put your child in charge — built to
-        <b>spark imagination</b> and <b>hold wandering attention</b>,
-        for curious kids and focus-finding minds alike.</p>
     </div>""", unsafe_allow_html=True)
 
     # Primary CTAs
@@ -2060,7 +2092,7 @@ def show_landing():
             st.rerun()
 
     st.markdown("""
-    <div class="lhero lcon" style="padding:0;">
+    <div class="lsub-hero lcon">
       <div class="ltrust">
         <span class="litem"><span class="ltick">✓</span> First story free, forever</span>
         <span class="lsep"></span>
